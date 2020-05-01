@@ -1,0 +1,11 @@
+CreditNoteDetailID, CreditNote Detail ID, int, ,, , Primary, , 100, false, false, 
+CreditNoteRequest, Credit Note Request, String, CreditNoteRequest,, , , , 100, false, false, 
+InvoiceDetail, Invoice Detail, String, InvoiceDetail,, , , , 100, false, true, 
+BaseQuantity, Base Quantity, int, ,, , , , 100, false, true, 
+UnitMeasure, Unit Measure, String, ,, , , , 100, false, true, 
+MeasureSize, Measure Size, int, ,, , , , 100, false, true, 
+Quantity, Quantity, int, ,, , , , 100, false, true, 
+UnitPrice, Unit Price, double, ,, , , , 100, false, true, 
+Amount, Amount, double, ,, , , , 100, false, true, 
+Notes, Notes, String, ,, , , , 100, false, true, 
+

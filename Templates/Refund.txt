@@ -1,0 +1,8 @@
+RefundID, Refund ID, String, ,, , Primary, Display, 20, false, false, 
+CreditNote, Credit Note, String, CreditNote,, , , , 20, false, true, 
+RefundDate, Refund Date, LocalDate, ,, , , , 100, false, true, 
+PayMode, Pay Mode, String, PayModes,, , , , 100, true, true, 
+BankAccount, Bank Account, String, BankAccount,, , , , 20, false, true, 
+Amount, Amount, double, ,, , , , 100, false, true, 
+AmountWords, Amount Words, String, ,, , , , 100, false, true, 
+RefundReceipts, Refund Receipts, List, RefundReceipt, Refund>Refund> String>Refund#Receipt> Receipt> String> Receipt#Amount> Amount> double> >> > > > 100> false> true

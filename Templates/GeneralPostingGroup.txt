@@ -1,0 +1,11 @@
+IdHelper, Id Helper, int, ,, , , ID_Helper, 100, false, true, 
+GeneralPostingID, General Posting ID, String, ,, , Primary, , 20, false, false, 
+BusinessGroup, Business Group, String, LookupData,, OneToOne, Foreign, , 100, false, false, CommonEnums
+ItemGroup, Item Group, String, LookupData,, OneToOne, Foreign, Display, 100, false, false, CommonEnums
+SalesAccount, Sales Account, String, ChartAccount,, OneToOne, Foreign, Display, 100, false, true, 
+SalesDiscountAccount, Sales Discout Account, String, ChartAccount,, OneToOne, Foreign, , 100, false, true, 
+SalesReturnAccount, Sales Return Account, String, ChartAccount
+PurchasesAccount, Purchases Account, String, ChartAccount,, OneToOne, Foreign, , 100, false, true, 
+DirectCostAppliedAccount, Direct Cost Applied Account, String, ChartAccount,, OneToOne, Foreign, , 100, false, true, 
+PurchaseDiscountAccount, Purchase Discount Account, String, ChartAccount,, OneToOne, Foreign, , 100, false, true, 
+PurchaseReturnAccount, Purchase Return Account, String, ChartAccount

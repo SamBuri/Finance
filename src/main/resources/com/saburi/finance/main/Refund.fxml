@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<VBox fx:id = "mVBox" id="Refund"  spacing="10"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.RefundController">
+    <children>
+
+        <GridPane vgap ="4" hgap="10">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label id="Refund" fx:id="lblCreditNote" minWidth="100" text="Credit Note" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox fx:id = "cboCreditNote" id = "Refund"  GridPane.rowIndex = "0" GridPane.columnIndex = "1" promptText = "Select Credit Note" minWidth="185.0">
+                <contextMenu>
+                    <ContextMenu fx:id ="cmuSelectCreditNote" id = "Refund">
+                        <items>
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiLoad" id = "Refund" text="Load" />
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectCreditNote" id = "Refund" text="Select CreditNote" />
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </ComboBox>  
+            <Label id="Refund" fx:id="lblRefundDate" minWidth="100" text="Refund Date" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <DatePicker fx:id = "dtpRefundDate" id = "Refund"  GridPane.rowIndex = "1" GridPane.columnIndex = "1" minWidth="185.0"/> 
+            <Label id="Refund" fx:id="lblPayMode" minWidth="100" text="Pay Mode" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <ComboBox fx:id = "cboPayMode" id = "Refund"  GridPane.rowIndex = "2" GridPane.columnIndex = "1" promptText = "Select Pay Mode" minWidth="185.0"/> 
+            <Label id="Refund" fx:id="lblBankAccount" minWidth="100" text="Bank Account" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <ComboBox fx:id = "cboBankAccount" id = "Refund"  GridPane.rowIndex = "3" GridPane.columnIndex = "1" promptText = "Select Bank Account" minWidth="185.0">
+                <contextMenu>
+                    <ContextMenu fx:id ="cmuSelectBankAccount" id = "Refund">
+                        <items>
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectBankAccount" id = "Refund" text="Select BankAccount" />
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </ComboBox>  
+            <Label id="Refund" fx:id="lblAmount" minWidth="100" text="Amount" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <TextField fx:id = "txtAmount" id = "Refund"  GridPane.rowIndex = "0" GridPane.columnIndex = "3" minWidth="150" editable = "false"/> 
+            <Label id="Refund" fx:id="lblAmountWords" minWidth="100" text="Amount Words" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id = "txtAmountWords" id = "Refund"  GridPane.rowIndex = "1" GridPane.columnIndex = "3" minWidth="100" editable = "false"/> 
+            <Label id="Refund" fx:id="lblCustomerID" minWidth="100" text="Customer ID" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id = "txtCustomerID" id = "Refund"  GridPane.rowIndex = "2" GridPane.columnIndex = "3" minWidth="100" editable = "false"/> 
+            <Label id="Refund" fx:id="lblCustomerName" minWidth="100" text="Customer Name" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id = "txtCustomerName" id = "Refund"  GridPane.rowIndex = "3" GridPane.columnIndex = "3" minWidth="100" editable = "false"/> 
+            <Label id="Refund" fx:id="lblInvoiceID" minWidth="100" text="Invoice ID" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+            <TextField fx:id = "txtInvoice" id = "Refund"  GridPane.rowIndex = "0" GridPane.columnIndex = "5" minWidth="150" editable = "false"/> 
+            <Label id="Refund" fx:id="lblInvoiceDate" minWidth="100" text="Invoice Date" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <TextField fx:id = "txtInvoiceDate" id = "Refund"  GridPane.rowIndex = "1" GridPane.columnIndex = "5" minWidth="100" editable = "false"/> 
+            <Label id="Refund" fx:id="lblCreditNoteDate" minWidth="100" text="Credit Note Date" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <TextField fx:id = "txtCreditNoteDate" id = "Refund"  GridPane.rowIndex = "2" GridPane.columnIndex = "5" minWidth="100" editable = "false"/>
+        </GridPane>
+        <TableView fx:id="tblRefundReceiptInvoices" id = "RefundReceipts" VBox.vgrow="ALWAYS" minHeight="300" minWidth="450">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <columns>
+                
+                <TableColumn id="Refund" fx:id="tbcRefundReceiptInvoiceReceiptID" text="Receipt ID" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="ReceiptID" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="Refund" fx:id="tbcRefundReceiptInvoiceAmountPaid" text="Amount Paid" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="AmountPaidDisplay" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="Refund" fx:id="tbcRefundReceiptInvoiceAmount" text="Amount" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="AmountDisplay" />
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+          
+        </TableView>
+        <AnchorPane>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="7.0">
+                <Button id="Refund" fx:id="btnSearch"  prefWidth="80.0" text="Search" visible="false" />
+                <Button id="Refund" fx:id="btnSave"  prefHeight="25.0" prefWidth="80.0" text="Save" />
+            </VBox>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="7.0">
+                <Button id="Refund" fx:id="btnDelete"  prefWidth="80.0" text="Delete" visible="false" />
+                <Button id="Refund" fx:id="btnClose"  prefHeight="25.0" prefWidth="80.0" text="Close" />
+            </VBox>
+        </AnchorPane>
+    </children>
+
+</VBox>
+

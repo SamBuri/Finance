@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<VBox fx:id = "mVBox" id="CreditNoteRequest"  spacing="10"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.CreditNoteRequestController">
+    <children>
+
+        <GridPane vgap ="4" hgap="10">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label id="CreditNoteRequest" fx:id="lblInvoice" minWidth="100" text="Invoice" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id = "txtInvoiceID" id = "CreditNoteRequest"  GridPane.rowIndex = "0" GridPane.columnIndex = "1" promptText = "Enter Invoice" minWidth="100.0">
+                <contextMenu>
+                    <ContextMenu fx:id ="cmuSelectInvoice" id = "CreditNoteRequest">
+                        <items>
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectInvoice" id = "CreditNoteRequest" text="Select Invoice" />
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </TextField>  
+            <Label id="CreditNoteRequest" fx:id="lblCreditNoteRequestID" minWidth="120" text="Credit Note Request ID" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id = "txtCreditNoteRequestID" id = "CreditNoteRequest"  GridPane.rowIndex = "1" GridPane.columnIndex = "1"  minWidth="100" promptText = "Enter Credit Note RequestID">
+                <contextMenu>
+                    <ContextMenu fx:id ="cmuSelectCreditNoteRequestID" id = "CreditNoteRequest">
+                        <items>
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiLoad" id = "CreditNoteRequest" text="Load" />   
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </TextField>  
+            <Label id="CreditNoteRequest" fx:id="lblRequestDate" minWidth="100" text="Request Date" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <DatePicker fx:id = "dtpRequestDate" id = "CreditNoteRequest"  GridPane.rowIndex = "2" GridPane.columnIndex = "1" minWidth="185.0"/> 
+            <Label id="CreditNoteRequest" fx:id="lblNotes" minWidth="100" text="Notes" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextArea fx:id = "txaNotes" id = "CreditNoteRequest"  GridPane.rowIndex = "3" GridPane.columnIndex = "1" prefWidth="100" prefHeight="50" promptText = "Enter Notes"/> 
+            <Label id="CreditNoteRequest" fx:id="lblAmount" minWidth="100" text="Amount" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <TextField fx:id = "txtAmount" id = "CreditNoteRequest"  GridPane.rowIndex = "0" GridPane.columnIndex = "3" minWidth="200" editable = "false"/> 
+            <Label id="CreditNoteRequest" fx:id="lblAmountWords" minWidth="100" text="AmountWords" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <TextArea fx:id = "txaAmountWords" id = "CreditNoteRequest"  GridPane.rowIndex = "1" GridPane.columnIndex = "3" prefWidth="100" prefHeight="50" editable = "false"/> 
+            <Label id="CreditNoteRequest" fx:id="lblCustomerName" minWidth="100" text="Customer Name" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id = "txtCustomerName" id = "CreditNoteRequest"  GridPane.rowIndex = "2" GridPane.columnIndex = "3" minWidth="100" editable = "false"/> 
+            <Label id="CreditNoteRequest" fx:id="lblInvoiceAmount" minWidth="100" text="Invoice Amount" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <TextField fx:id = "txtInvoiceAmount" id = "CreditNoteRequest"  GridPane.rowIndex = "3" GridPane.columnIndex = "3" minWidth="100" editable = "false"/> 
+            <Label id="CreditNoteRequest" fx:id="lblRequestStatus" minWidth="100" text="Request Status" GridPane.columnIndex="4" GridPane.rowIndex="0" />
+            <ComboBox fx:id = "cboRequestStatus" id = "CreditNoteRequest"  GridPane.rowIndex = "0" GridPane.columnIndex = "5" promptText = "Select Request Status" minWidth="185.0"/>
+        </GridPane>
+        <TableView fx:id="tblCreditNoteRequestDetails" id = "CreditNoteRequestDetails" VBox.vgrow="ALWAYS" minHeight="300" minWidth="450">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <columns>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsItemID" text="Item ID" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="ItemID" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsItemName" text="Item Name" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="ItemName" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsBaseQuantity" text="Base Quantity" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="BaseQuantity" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsUnitMeasure" text="Unit Measure" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="UnitMeasure" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsMeasureSize" text="Measure Size" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="MeasureSize" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsQuantity" text="Quantity" editable="false">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="Quantity" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsUnitPrice" text="Unit Price" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="UnitPriceDisplay" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsAmount" text="Amount" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="AmountDisplay" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsInvoiceQuantity" text="Invoice Quantity" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="InvoiceQuantity" />
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsInvoiceAmount" text="Invoice Amount" editable="true">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="InvoiceAmountDisplay" />
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+            <contextMenu>
+                <ContextMenu fx:id ="cmuCreditNoteRequestDetails" id = "CreditNoteRequest">
+                    <items>
+                        <MenuItem mnemonicParsing="false" fx:id ="cmiSelectInvoiceDetails" id = "CreditNoteRequest" text="Select Invoice Details" />
+                    </items>
+                </ContextMenu>
+            </contextMenu>
+        </TableView>
+        <AnchorPane>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="7.0">
+                <Button id="CreditNoteRequest" fx:id="btnSearch"  prefWidth="80.0" text="Search" visible="false" />
+                <Button id="CreditNoteRequest" fx:id="btnSave"  prefHeight="25.0" prefWidth="80.0" text="Save" />
+            </VBox>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="7.0">
+                <Button id="CreditNoteRequest" fx:id="btnDelete"  prefWidth="80.0" text="Delete" visible="false" />
+                <Button id="CreditNoteRequest" fx:id="btnClose"  prefHeight="25.0" prefWidth="80.0" text="Close" />
+            </VBox>
+        </AnchorPane>
+    </children>
+
+</VBox>
+

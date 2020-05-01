@@ -1,0 +1,6 @@
+CreditNoteApproval, Credit Note Approval, String, CreditNoteApproval,, OneToOne, Foreign, , 20, false, false, 
+CreditNoteID, Credit Note ID, String, ,, , Primary, Display, 20, false, false, 
+ApprovalMode, ApprovalMode, String, ApprovalModes,, OneToOne, Foreign, , 100, true, false, 
+CreditNoteDate, Credit Note Date, LocalDate, ,, , , , 100, false, true, 
+Amount, Amount, double, ,, , , , 100, false, true, 
+AmountWords, AmountWords, String, ,, , , , 100, false, true, 

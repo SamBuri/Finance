@@ -1,0 +1,6 @@
+CreditNoteApprovalID, Credit Note Approval ID, String, ,, , Primary, , 20, false, false, 
+CreditNoteRequest, Credit Note Request, String, CreditNoteRequest,, OneToOne, Foreign, Display, 20, false, false, 
+ApprovalDate, Approval Date, LocalDate, ,, , , , 100, false, true, 
+Notes, Notes, String, ,, , , , 200, false, true, 
+RequestStatus, Request Status, String, RequestStatus,, OneToOne, Foreign, , 100, true, true, 
+ApprovedBy, Approved By, String, Staff,, OneToOne, Foreign, , 20, false, true, 

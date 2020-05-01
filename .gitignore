@@ -1,0 +1,11 @@
+build/
+dist/
+nbproject/
+test/
+target/
+*.class
+.ErrorLog.txt
+Report.pdf
+logs/
+Installers/
+Files/

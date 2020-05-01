@@ -1,0 +1,4 @@
+RefundReceiptID, Refund Receipt ID, int, ,, OneToOne, Primary, , 100, false, false, 
+Refund, Refund, String, Refund,, OneToOne, Foreign, Display, 100, false, false, 
+Receipt, Receipt, String, Receipt,, OneToOne, Foreign, Display, 100, false, false, 
+Amount, Amount, double, ,, , , , 100, false, true, 

@@ -1,0 +1,16 @@
+CreditNoteApprovalID, Credit Note Approval ID, String, ,, , Primary, , 20, false, false, 
+CreditNoteRequest, Credit Note Request, String, CreditNoteRequest,, OneToOne, Foreign, Display, 20, false, false, 
+CreditNoteRequestID, Credit Note RequestID, String, ,, , Primary, Display, 20, false, false, 
+ApprovalDate, Approval Date, LocalDate, ,, , , , 100, false, true, 
+Notes, Notes, String, ,, , , , 200, false, true, 
+ApprovedBy, Approved By, String, Staff,, OneToOne, Foreign, , 20, false, true, 
+Invoice, Invoice, String, Invoice,, OneToOne, Foreign, ID_Generator, 20, false, false, 
+RequestDate, Request Date, LocalDate, ,, , , , 100, false, true, 
+RequestNotes, Request Notes, String, ,, , , , 200, false, true, 
+Amount, Amount, double, ,, , , , 100, false, true, 
+AmountWords, AmountWords, String, ,, , , , 200, false, true, 
+CustomerName, Customer Name, String
+InvoiceAmount, Invoice Amount, double
+RequestStatus, Request Status, String, RequestStatus,, OneToOne, Foreign, , 100, true, true, 
+CreditNoteRequestDetails, Credit Note Request Details, List, CreditNoteRequestDetails,ItemID>Item ID>String#ItemName>Item Name>String#BaseQuantity>BaseQuantity>int#UnitMeasure>Unit Measure>String#MeasureSize>Measure Size>int#Quantity>Quantity>int#UnitPrice>Unit Price>double#Amount>Amount>double, OneToMany, , , 100, false, true, 
+

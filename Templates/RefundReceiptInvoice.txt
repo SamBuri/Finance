@@ -1,0 +1,5 @@
+RefundReceiptInvoiceID, RefundReceiptInvoiceID, int, ,, , Primary, , 100, false, false, 
+Refund, Refund, String, Refund,, , , Display, 100, false, false, 
+ReceiptInvoice, Receipt Invoice, String, ReceiptInvoice,, , , Display, 100, false, false, 
+Amount, Amount, double, ,, , , , 100, false, false, 
+
