@@ -287,9 +287,9 @@ public class JournalEntryDetailDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("accountName", "Account Name", this.accountName.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("accountType", "Account Type", this.accountType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("accountAction", "Account Action", this.accountAction.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), SearchDataTypes.NUMBER, false));
-        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(), SearchDataTypes.NUMBER, false));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(),SearchDataTypes.NUMBER, false));
+        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(),this.unitPriceDisplay.get(),  SearchDataTypes.NUMBER, false));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("locationID", "Location ID", this.locationID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("locationDisplay", "Location", this.locationDisplay.get(), SearchDataTypes.STRING));

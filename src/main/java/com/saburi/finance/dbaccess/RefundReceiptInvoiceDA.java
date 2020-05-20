@@ -225,11 +225,11 @@ public class RefundReceiptInvoiceDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("refundDisplay", "Refund", this.refundDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("receiptInvoiceID", "Receipt Invoice ID", this.receiptInvoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptInvoiceDisplay", "Receipt Invoice", this.receiptInvoiceDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptDisplay", "Receipt", this.receiptDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("amountPaid", "Amount Paid", this.amountPaid.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amountPaid", "Amount Paid", this.amountPaid.get(), this.amountPaidDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 

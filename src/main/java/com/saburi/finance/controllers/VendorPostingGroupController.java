@@ -63,7 +63,7 @@ public class VendorPostingGroupController extends EditController {
             this.primaryKeyControl = txtVendorPostingGroupID;
             this.dbAccess = oVendorPostingGroupDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             this.setNextVendorPostingGroupID();
             selectLookupData(FinanceNavigate.MAIN_CLASS, cmiSelectVendorGroup, FinanceObjectNames.VENDORGROUP, "LookupData", "Vendor Group", 700, 400, cboVendorGroup, false);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectPayableAccount, oChartAccountDA, oChartAccountDA.getChartAccountDAs(AccountTypes.Liability), "ChartAccount", "Payable Account", 700, 400, cboPayableAccount, true);

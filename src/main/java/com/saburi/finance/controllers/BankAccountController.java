@@ -75,7 +75,7 @@ public class BankAccountController extends EditController {
             this.primaryKeyControl = txtBankAccountID;
             this.dbAccess = oBankAccountDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             this.setNextBankAccountID();
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCurrency, oCurrencyDA, "Currency", "Currency", 700, 400, cboCurrency, true);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectPostingAccount, oChartAccountDA, oChartAccountDA.getChartAccountDAs(AccountTypes.Asset), "ChartAccount", "Chart of Account", 700, 400, cboPostingAccount, true);

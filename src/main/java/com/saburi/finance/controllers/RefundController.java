@@ -8,6 +8,7 @@ import com.saburi.common.controllers.EditController;
 import com.saburi.common.utils.EditCell;
 import static com.saburi.common.utils.FXUIUtils.addRow;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
+import static com.saburi.common.utils.FXUIUtils.formatDatePicker;
 import static com.saburi.common.utils.FXUIUtils.formatValue;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getDouble;
@@ -81,7 +82,7 @@ public class RefundController extends EditController {
     private TextField txtCreditNoteDate;
     @FXML
     private TableView<RefundReceiptInvoiceDA> tblRefundReceiptInvoices;
-   
+
     private final CreditNoteDA oCreditNoteDA = new CreditNoteDA();
     private final BankAccountDA oBankAccountDA = new BankAccountDA();
     ReceiptDA oReceiptDA = new ReceiptDA();
@@ -95,22 +96,40 @@ public class RefundController extends EditController {
         try {
             loadDBEntities(oCreditNoteDA.getToRefundCreditNotes(), cboCreditNote);
             cboPayMode.setItems(FXCollections.observableArrayList(PayModes.values()));
-            loadDBEntities(oBankAccountDA.getBankAccounts(), cboBankAccount);
+            loadDBEntities(cboBankAccount);
 
             validateNumber(txtAmount);
             formatValue(txtAmount);
+            formatDatePicker(dtpRefundDate);
             tblRefundReceiptInvoices.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             setTableEditable(tblRefundReceiptInvoices, false);
             this.primaryKeyControl = cboCreditNote;
             this.dbAccess = oRefundDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
 
             setRefundReceiptAmount();
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCreditNote, oCreditNoteDA, oCreditNoteDA.getToRefundCreditNoteDAs(), "CreditNote", "Credit Note", cboCreditNote, true);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectBankAccount, oBankAccountDA, "BankAccount", "Bank Account", cboBankAccount, true);
             cboCreditNote.setOnAction(e -> creditNoteSelected());
             dtpRefundDate.setValue(LocalDate.now());
+            cboPayMode.setOnAction(e -> {
+                PayModes payMode = (PayModes) cboPayMode.getValue();
+                if (payMode == null) {
+                    return;
+                }
+                List<BankAccount> bankAccounts = oBankAccountDA.getBankAccounts(payMode);
+                loadDBEntities(bankAccounts, cboBankAccount);
+                int size = bankAccounts.size();
+                if (size == 1) {
+                    cboBankAccount.getSelectionModel().select(bankAccounts.get(0));
+                } else if (size > 1) {
+                    BankAccount defaultBankAccount = bankAccounts.stream().filter((p) -> p.isisDefault() == true).findAny().orElse(null);
+                    cboBankAccount.setValue(defaultBankAccount);
+
+                }
+            });
+
         } catch (Exception e) {
             errorMessage(e);
         } finally {
@@ -184,7 +203,12 @@ public class RefundController extends EditController {
             cboCreditNote.setValue(refundDA.getCreditNote());
             dtpRefundDate.setValue((LocalDate) refundDA.getRefundDate());
             cboPayMode.setValue(refundDA.getPayMode());
-            cboBankAccount.setValue(refundDA.getBankAccount());
+            List<BankAccount> bankAccounts = cboBankAccount.getItems();
+            BankAccount bankAccount = refundDA.getBankAccount();
+            if (!bankAccounts.contains(bankAccount)) {
+                cboBankAccount.getItems().add(bankAccount);
+            }
+            cboBankAccount.setValue(bankAccount);
             txtAmount.setText(formatNumber(refundDA.getAmount()));
             txtAmountWords.setText(refundDA.getAmountWords());
             txtCustomerID.setText(refundDA.getCustomerID());
@@ -240,5 +264,4 @@ public class RefundController extends EditController {
 
     }
 
-   
 }

@@ -43,7 +43,7 @@ public class ItemTemplateViewController extends AbstractViewController {
                 controller.setFormMode(FormMode.Save);
                 controller.init(uiName, FormMode.Save);
                 controller.loadItem((ItemTemplateDA) tblItemTemplate.getSelectionModel().getSelectedItem());
-                float size = controller.getMinSize();
+                float size = controller.getPrefSize();
                 InternalWindow window = new InternalWindow(uiName, null, uiName, root);
                 if (size > 0) {
                     window.setMinWidth(size);

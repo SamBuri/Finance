@@ -8,6 +8,7 @@ import com.saburi.common.controllers.EditController;
 import com.saburi.common.dbaccess.StaffDA;
 import static com.saburi.common.utils.FXUIUtils.addRow;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
+import static com.saburi.common.utils.FXUIUtils.formatDatePicker;
 import static com.saburi.common.utils.FXUIUtils.formatValue;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getDouble;
@@ -104,12 +105,15 @@ public class CreditNoteController extends EditController {
             validateNumber(txtInvoiceAmount);
             formatValue(txtAmount);
             formatValue(txtInvoiceAmount);
+            formatDatePicker(dtpCreditNoteDate);
+            formatDatePicker(dtpRequestDate);
+            formatDatePicker(dtpApprovalDate);
             tblCreditNoteRequestDetails.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             setTableEditable(tblCreditNoteRequestDetails);
             this.primaryKeyControl = txtCreditNoteApprovalID;
             this.dbAccess = oCreditNoteDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
 
             txtCreditNoteApprovalID.focusedProperty().addListener((ov, t, t1) -> {
                 if (t) {

@@ -299,19 +299,19 @@ public class CreditNoteApprovalDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("creditNoteApprovalID", "Credit Note Approval ID", this.creditNoteApprovalID.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("creditNoteRequestID", "Credit Note Request ID", this.creditNoteRequestID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("creditNoteRequestDisplay", "Credit Note Request", this.creditNoteRequestDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("approvalDate", "Approval Date", this.approvalDate.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("approvalDate", "Approval Date", this.approvalDate.get(), this.approvalDateDisplay.get(), SearchDataTypes.DATE));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("approvedByID", "Approved By ID", this.approvedByID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("approvedByDisplay", "Approved By", this.approvedByDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("invoiceID", "Invoice ID", this.invoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("requestDate", "Request Date", this.requestDate.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("requestDate", "Request Date", this.requestDate.get(),this.requestDateDisplay.get(), SearchDataTypes.DATE));
         this.searchColumns.add(new SearchColumn("requestNotes", "Request Notes", this.requestNotes.get(), SearchDataTypes.STRING
         ));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("amountWords", "AmountWords", this.amountWords.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("customerName", "Customer Name", this.customerName.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("invoiceAmount", "Invoice Amount", this.invoiceAmount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("invoiceAmount", "Invoice Amount", this.invoiceAmount.get(), this.invoiceAmountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("requestStatus", "Request Status", this.requestStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }

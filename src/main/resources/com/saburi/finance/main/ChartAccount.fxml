@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox id="ChartAccount" fx:id="mVBox" spacing="2" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.ChartAccountController">
+    <children>
+
+        <GridPane hgap="5" vgap="2">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label id="ChartAccount" fx:id="lblAccountType" minWidth="100" text="Account Type" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <ComboBox id="ChartAccount" fx:id="cboAccountType" minWidth="185.0" promptText="Select Account Type" GridPane.columnIndex="1" GridPane.rowIndex="0" /> 
+            <Label id="ChartAccount" fx:id="lblAccountCategory" minWidth="100" text="Account Category" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ComboBox id="ChartAccount" fx:id="cboAccountCategory" minWidth="185.0" promptText="Select Account Category" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <contextMenu>
+                    <ContextMenu id="ChartAccount" fx:id="cmuSelectAccountCategory">
+                        <items>
+                            <MenuItem id="ChartAccount" fx:id="cmiSelectAccountCategory" mnemonicParsing="false" text="Select Account Category" />
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </ComboBox>  
+            <Label id="ChartAccount" fx:id="lblAccountID" minWidth="100" text="Account ID" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <TextField id="ChartAccount" fx:id="txtAccountID" minWidth="100" promptText="Enter Account ID" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <contextMenu>
+                    <ContextMenu id="ChartAccount" fx:id="cmuSelectAccountID">
+                        <items>
+                            <MenuItem id="ChartAccount" fx:id="cmiLoad" mnemonicParsing="false" text="Load" />   
+                        </items>
+                    </ContextMenu>
+                </contextMenu>
+            </TextField>  
+            <Label id="ChartAccount" fx:id="lblAccountName" minWidth="100" text="Account Name" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <TextField id="ChartAccount" fx:id="txtAccountName" minWidth="100" promptText="Enter Account Name" GridPane.columnIndex="1" GridPane.rowIndex="3" /> 
+            <Label id="ChartAccount" fx:id="lblAccountAction" minWidth="100" text="Account Action" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+            <ComboBox id="ChartAccount" fx:id="cboAccountAction" minWidth="185.0" promptText="Select Account Action" GridPane.columnIndex="1" GridPane.rowIndex="4" /> 
+            <Label id="ChartAccount" fx:id="lblAccountReport" minWidth="100" text="Account Report" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+            <ComboBox id="ChartAccount" fx:id="cboAccountReport" minWidth="185.0" promptText="Select Account Report" GridPane.columnIndex="1" GridPane.rowIndex="5" /> 
+            <Label id="ChartAccount" fx:id="lblContra" minWidth="100" text="Contra" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <CheckBox id="ChartAccount" fx:id="chkContra" GridPane.columnIndex="1" GridPane.rowIndex="6" /> 
+            <Label id="ChartAccount" fx:id="lblControlAccount" minWidth="100" text="Control Account" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+            <CheckBox id="ChartAccount" fx:id="chkControlAccount" GridPane.columnIndex="1" GridPane.rowIndex="7" /> 
+            <Label id="ChartAccount" fx:id="lblOpeningBalance" minWidth="100" text="Opening Balance" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+            <TextField id="ChartAccount" fx:id="txtOpeningBalance" editable="false" minWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="8" /> 
+            <Label id="ChartAccount" fx:id="lblClosingBalance" minWidth="100" text="Closing Balance" GridPane.columnIndex="0" GridPane.rowIndex="9" />
+            <TextField id="ChartAccount" fx:id="txtClosingBalance" editable="false" minWidth="100"  GridPane.columnIndex="1" GridPane.rowIndex="9" /> 
+            <Label id="ChartAccount" fx:id="lblReadOnly" minWidth="100" text="Read Only" GridPane.columnIndex="0" GridPane.rowIndex="10" />
+            <CheckBox id="ChartAccount" fx:id="chkReadOnly" GridPane.columnIndex="1" GridPane.rowIndex="10" /> 
+            <Label id="ChartAccount" fx:id="lblHidden" minWidth="100" text="Hidden" GridPane.columnIndex="0" GridPane.rowIndex="11" />
+            <CheckBox id="ChartAccount" fx:id="chkHidden" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+        <AnchorPane>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.leftAnchor="7.0">
+                <Button id="ChartAccount" fx:id="btnSearch" prefWidth="80.0" text="Search" visible="false" />
+                <Button id="ChartAccount" fx:id="btnSave" prefHeight="25.0" prefWidth="80.0" text="Save" />
+            </VBox>
+            <VBox spacing="2" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="7.0">
+                <Button id="ChartAccount" fx:id="btnDelete" prefWidth="80.0" text="Delete" visible="false" />
+                <Button id="ChartAccount" fx:id="btnClose" prefHeight="25.0" prefWidth="80.0" text="Close" />
+            </VBox>
+        </AnchorPane>
+    </children>
+
+</VBox>

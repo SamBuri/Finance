@@ -17,10 +17,10 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-<VBox fx:id = "mVBox" id="CreditNoteApproval"  spacing="10"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.CreditNoteApprovalController">
+<VBox fx:id = "mVBox" id="CreditNoteApproval"  spacing="2"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.CreditNoteApprovalController">
     <children>
 
-        <GridPane vgap ="4" hgap="10">
+        <GridPane vgap ="2" hgap="5">
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
@@ -44,7 +44,7 @@
                 <contextMenu>
                     <ContextMenu fx:id ="cmuSelectApprovedBy" id = "CreditNoteApproval">
                         <items>
-                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectApprovedBy" id = "CreditNoteApproval" text="Select ApprovedBy" />
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectApprovedBy" id = "CreditNoteApproval" text="Select Staff" />
                         </items>
                     </ContextMenu>
                 </contextMenu>
@@ -67,9 +67,7 @@
             <ComboBox fx:id = "cboRequestStatus" id = "CreditNoteApproval"  GridPane.rowIndex = "5" GridPane.columnIndex = "3" promptText = "Select Request Status" minWidth="185.0"/>
         </GridPane>
         <TableView fx:id="tblCreditNoteRequestDetails" id = "CreditNoteRequestDetails" VBox.vgrow="ALWAYS" minHeight="300" minWidth="450">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+          
             <columns>
                 <TableColumn id="CreditNoteRequest" fx:id="tbcCreditNoteRequestDetailsItemID" text="Item ID" editable="true">
                     <cellValueFactory>

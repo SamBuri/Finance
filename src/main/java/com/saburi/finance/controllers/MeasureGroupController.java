@@ -78,7 +78,7 @@ public class MeasureGroupController extends EditController {
             this.primaryKeyControl = txtMeasureGroupID;
             this.dbAccess = oMeasureGroupDA;
             this.restrainColumnConstraint = false;
-//            this.minSize = 360;
+//            this.prefSize = 360;
             this.setNextMeasureGroupID();
             setMeasureRelationUnitMeasure();
             setMeasureRelationBaseSize();

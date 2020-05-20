@@ -11,6 +11,7 @@ import com.saburi.common.utils.CommonEnums.NumericDataTypes;
 import com.saburi.common.utils.EditCell;
 import static com.saburi.common.utils.FXUIUtils.addRow;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
+import static com.saburi.common.utils.FXUIUtils.formatDatePicker;
 import static com.saburi.common.utils.FXUIUtils.formatValue;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getDouble;
@@ -32,6 +33,7 @@ import com.saburi.common.utils.Utilities.FormMode;
 import static com.saburi.common.utils.Utilities.defortNumberOptional;
 import static com.saburi.common.utils.Utilities.formatDate;
 import static com.saburi.common.utils.Utilities.formatNumber;
+import static com.saburi.common.utils.Utilities.getInt;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -52,6 +54,7 @@ import com.saburi.finance.dbaccess.InvoiceDetailsDA;
 import com.saburi.finance.dbaccess.ItemDA;
 import com.saburi.finance.dbaccess.MeasureGroupDA;
 import com.saburi.finance.dbaccess.MeasureRelationDA;
+import com.saburi.finance.dbaccess.SaleOrderDetailDA;
 import com.saburi.finance.entities.Invoice;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
@@ -68,7 +71,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class InvoiceController extends EditController {
-   
+
     private final InvoiceDA oInvoiceDA = new InvoiceDA();
     @FXML
     private TextField txtInvoiceID;
@@ -76,6 +79,11 @@ public class InvoiceController extends EditController {
     private DatePicker dtpInvoiceDate;
     @FXML
     private ComboBox cboInvoiceType;
+    @FXML
+    private ComboBox cboSellTo;
+    @FXML
+    private MenuItem cmiSelectSellTo;
+
     @FXML
     private ComboBox cboBillTo;
     @FXML
@@ -93,12 +101,12 @@ public class InvoiceController extends EditController {
     @FXML
     private TableColumn<InvoiceDetailsDA, String> tbcInvoiceDetailsItemID, tbcInvoiceDetailsItemDisplay;
     @FXML
-    private TableColumn<InvoiceDetailsDA, Integer> tbcInvoiceDetailsBaseQuantity;
+    private TableColumn<InvoiceDetailsDA, String> tbcInvoiceDetailsBaseQuantity;
     @FXML
     private TableColumn<InvoiceDetailsDA, String> tbcInvoiceDetailsUnitMeasure;
 
     @FXML
-    private TableColumn<InvoiceDetailsDA, Integer> tbcInvoiceDetailsQuantity;
+    private TableColumn<InvoiceDetailsDA, String> tbcInvoiceDetailsQuantity;
     @FXML
     private TableColumn<InvoiceDetailsDA, String> tbcInvoiceDetailsUnitPrice;
     @FXML
@@ -112,9 +120,11 @@ public class InvoiceController extends EditController {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             cboInvoiceType.setItems(FXCollections.observableArrayList(InvoiceTypes.values()));
-            loadDBEntities(oCustomerDA.getCustomers(), cboBillTo);
+            loadDBEntities(oCustomerDA.getSellableCustomers(), cboSellTo);
+            loadDBEntities(cboBillTo);
             validateNumber(txtAmount);
             formatValue(txtAmount);
+            formatDatePicker(dtpInvoiceDate);
             tblInvoiceDetails.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             setTableEditable();
             addRow(tblInvoiceDetails, new InvoiceDetailsDA());
@@ -122,14 +132,14 @@ public class InvoiceController extends EditController {
             this.primaryKeyControl = txtInvoiceID;
             this.dbAccess = oInvoiceDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 1000;
+            this.prefSize = 1000;
             this.setNextInvoiceID();
             setInvoiceDetailsItem();
             setInvoiceDetailsBaseQuantity();
             setInvoiceDetailsUnitMeasure();
             setInvoiceDetailsUnitPrice();
             setInvoiceDetailsDiscount();
-            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectBillTo, oCustomerDA, "Customer", "Customer", 700, 400, cboBillTo, false);
+            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectSellTo, oCustomerDA, oCustomerDA.getSellableCustomerDAs(), "Customer", "Sell To", cboSellTo, true);
             cboBillTo.setOnAction(e -> {
                 this.selectedBillTo = ((Customer) getEntity(cboBillTo));
                 InvoiceTypes invoiceType = (InvoiceTypes) cboInvoiceType.getValue();
@@ -169,6 +179,22 @@ public class InvoiceController extends EditController {
             cboInvoiceType.setOnAction(e -> setTableColumns());
             dtpInvoiceDate.setValue(LocalDate.now());
 
+            cboSellTo.setOnAction(e -> {
+                try {
+                    cboBillTo.getItems().clear();
+                    Customer customer = (Customer) getEntity(cboSellTo);
+                    if (customer == null) {
+                        return;
+                    }
+                    CustomerDA customerDA = oCustomerDA.get(customer.getCustomerID());
+                    loadDBEntities(customerDA.getAllSponseringCustomers(), cboBillTo);
+                    cboBillTo.setValue(customerDA.getTranDefaulSponser());
+                } catch (Exception ex) {
+                    errorMessage(ex);
+                }
+
+            });
+
         } catch (Exception e) {
             errorMessage(e);
         } finally {
@@ -182,18 +208,17 @@ public class InvoiceController extends EditController {
             String invoiceID = getText(txtInvoiceID, "Invoice ID");
             LocalDate invoiceDate = getDate(dtpInvoiceDate, "Invoice Date");
             InvoiceTypes invoiceType = (InvoiceTypes) getSelectedValue(cboInvoiceType, "Invoice Type");
+            Customer sellTo = (Customer) getEntity(cboSellTo, "Sell To");
             Customer billTo = (Customer) getEntity(cboBillTo, "Bill To");
             double amount = getDouble(txtAmount, "Amount");
             String amountWords = getText(txaAmountWords, "Amount Words");
             List<InvoiceDetailsDA> invoiceDetailsDAs = tblInvoiceDetails.getItems();
             invoiceDetailsDAs.removeIf((p) -> p.getItem() == null);
 
-            InvoiceDA invoiceDA = new InvoiceDA(invoiceID, invoiceDate, invoiceType, billTo, amount, amountWords);
+            InvoiceDA invoiceDA = new InvoiceDA(invoiceID, invoiceDate, invoiceType, sellTo, billTo, amount, amountWords);
             invoiceDetailsDAs.forEach(e -> {
                 e.setInvoice((Invoice) invoiceDA.getInvoice());
-                if (invoiceType.equals(InvoiceTypes.Direct)) {
-                    e.setSellTo(billTo);
-                }
+
             });
             invoiceDA.setInvoiceDetailsDAs(invoiceDetailsDAs);
 
@@ -223,6 +248,7 @@ public class InvoiceController extends EditController {
                     javaFXPDF.makePrintablePDFDocument();
                 }
                 clear();
+                this.setNextInvoiceID();
             } else if (buttonText.equalsIgnoreCase(FormMode.Update.name())) {
                 invoiceDA.update();
                 message("Updated Successfully");
@@ -260,12 +286,17 @@ public class InvoiceController extends EditController {
     public void loadData() {
         try {
             String invoiceID = getText(txtInvoiceID, "Invoice ID");
-
             InvoiceDA invoiceDA = oInvoiceDA.get(invoiceID);
             txtInvoiceID.setText(invoiceDA.getInvoiceID());
             dtpInvoiceDate.setValue((LocalDate) invoiceDA.getInvoiceDate());
             cboInvoiceType.setValue(invoiceDA.getInvoiceType());
-            cboBillTo.setValue(invoiceDA.getBillTo());
+            cboSellTo.setValue(invoiceDA.getSellTo());
+            Customer billTo = invoiceDA.getBillTo();
+            List<Customer> customers = cboBillTo.getItems();
+            if (!customers.contains(billTo)) {
+                cboBillTo.getItems().add(billTo);
+            }
+            cboBillTo.setValue(billTo);
             txtAmount.setText(formatNumber(invoiceDA.getAmount()));
             txaAmountWords.setText(invoiceDA.getAmountWords());
             tblInvoiceDetails.setItems(FXCollections.observableArrayList(invoiceDA.getInvoiceDetailsDAs()));
@@ -294,8 +325,27 @@ public class InvoiceController extends EditController {
                     : event.getOldValue();
             Item item = oItemDA.getItem(value);
             if (item == null) {
-                Platform.runLater(() -> message("No Item with Id " + value + " found"));
+                Platform.runLater(() -> {
+                    message("No Item with Id " + value + " found");
+                    tblInvoiceDetails.getItems().set(event.getTablePosition().getRow(), new InvoiceDetailsDA());
+                    tblInvoiceDetails.refresh();
+
+                });
                 return;
+            }
+            if (tblInvoiceDetails.getItems()
+                    .parallelStream()
+                    .filter((p) -> p.getItemID() != null)
+                    .filter(p -> p.getItemID().equals(value))
+                    .collect(Collectors.toList())
+                    .size() > 1) {
+                Platform.runLater(() -> {
+                    message("Item : " + item.getItemName() + " is already selected");
+                    tblInvoiceDetails.getItems().set(event.getTablePosition().getRow(), new InvoiceDetailsDA());
+                    tblInvoiceDetails.refresh();
+                });
+                return;
+
             }
             InvoiceDetailsDA invoiceDetailsDA = event.getTableView().getItems().get(event.getTablePosition().getRow());
             invoiceDetailsDA.setItem(item);
@@ -307,15 +357,16 @@ public class InvoiceController extends EditController {
     }
 
     private void setInvoiceDetailsBaseQuantity() {
-        tbcInvoiceDetailsBaseQuantity.setCellFactory(EditCell.IntegerTableColumn());
+        tbcInvoiceDetailsBaseQuantity.setCellFactory(EditCell.StringTableColumn());
         tbcInvoiceDetailsBaseQuantity.setOnEditCommit(event -> {
-            final int value = event.getNewValue() != null ? event.getNewValue()
+            final String value = event.getNewValue() != null ? event.getNewValue()
                     : event.getOldValue();
             ((InvoiceDetailsDA) event.getTableView().getItems()
                     .get(event.getTablePosition().getRow()))
-                    .setBaseQuantity(value);
+                    .setBaseQuantity(getInt(value));
             tblInvoiceDetails.refresh();
             addRow(tblInvoiceDetails, new InvoiceDetailsDA());
+            calculateAmount();
         });
     }
 
@@ -342,6 +393,7 @@ public class InvoiceController extends EditController {
                     .setUnitPrice(defortNumberOptional(value));
             tblInvoiceDetails.refresh();
             addRow(tblInvoiceDetails, new InvoiceDetailsDA());
+            calculateAmount();
         });
     }
 
@@ -371,7 +423,6 @@ public class InvoiceController extends EditController {
 //        this.setNextInvoiceID();
 //
 //    }
-
     private void loadItem() {
         try {
             ObservableList<InvoiceDetailsDA> selectedItems = tblInvoiceDetails.getSelectionModel().getSelectedItems();

@@ -122,7 +122,7 @@ public class ItemController extends EditController {
             this.primaryKeyControl = txtItemID;
             this.dbAccess = oItemDA;
             this.restrainColumnConstraint = false;
-//            this.minSize = 360;
+//            this.prefSize = 360;
             cboItemCategory.setOnAction(e -> this.setNextItemID());
             setItemPriceGroupPriceGroup();
             setItemPriceGroupUnitPrice();

@@ -6,6 +6,7 @@ package com.saburi.finance.dbaccess;
 
 import com.saburi.common.dbaccess.DBAccess;
 import com.saburi.common.dbaccess.IDGeneratorDA;
+import com.saburi.common.dbaccess.OptionsDA;
 import com.saburi.finance.entities.Receipt;
 import javafx.beans.property.*;
 import java.util.ArrayList;
@@ -35,9 +36,11 @@ import com.saburi.finance.utils.FinanceEnums.AccountTypes;
 import com.saburi.finance.utils.FinanceEnums.DocumentTypes;
 import com.saburi.common.utils.CommonEnums.EntryModes;
 import com.saburi.common.utils.CommonEnums.Rights;
+import com.saburi.common.utils.FXUIUtils;
 import com.saburi.finance.utils.FinanceEnums.JournalTypes;
 import com.saburi.finance.utils.FinanceEnums.PostStatus;
 import com.saburi.finance.utils.CurrentFinacialPeriod;
+import com.saburi.finance.utils.FinanceOptionKeys;
 import java.util.LinkedHashMap;
 
 public class ReceiptDA extends DBAccess {
@@ -172,7 +175,7 @@ public class ReceiptDA extends DBAccess {
         this.payMode.set(payMode);
     }
 
-    public BankAccount getBankAcccount() {
+    public BankAccount getBankAccount() {
         return bankAcccount;
     }
 
@@ -373,34 +376,31 @@ public class ReceiptDA extends DBAccess {
         this.amountWords.set(receipt.getAmountWords());
         this.amountRefunded.set(receipt.getAmountRefunded());
         this.amountRefundedDisplay.set(formatNumber(receipt.getAmountRefunded()));
-        this.netPaid.set(receipt.getAmountPaid()-receipt.getAmountRefunded());
+        this.netPaid.set(receipt.getAmountPaid() - receipt.getAmountRefunded());
         this.netPaidDisplay.set(formatNumber(netPaid.get()));
 
         initCommonProprties();
     }
 
-    
-    
-    private void createSearchColumns(){
- this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING));
-this.searchColumns.add(new SearchColumn("receiptDate", "Receipt Date", this.receiptDate.get(), receiptDateDisplay.get(), SearchDataTypes.DATE));
-this.searchColumns.add(new SearchColumn("customerID", "Customer ID", this.customerID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal,false));
-this.searchColumns.add(new SearchColumn("customerDisplay", "Customer", this.customerDisplay.get(), SearchDataTypes.STRING));
-this.searchColumns.add(new SearchColumn("payMode", "Pay Mode", this.payMode.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-this.searchColumns.add(new SearchColumn("bankAcccountID", "Account ID", this.bankAcccountID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal,false));
-this.searchColumns.add(new SearchColumn("bankAcccountDisplay", "Account", this.bankAcccountDisplay.get(), SearchDataTypes.STRING));
-this.searchColumns.add(new SearchColumn("totalBill", "Total Bill", this.totalBill.get(), totalBillDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.add(new SearchColumn("amountTered", "Amount Tendered", this.amountTered.get(), amountTeredDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.add(new SearchColumn("currencyID", "Currency ID", this.currencyID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal,false));
-this.searchColumns.add(new SearchColumn("currencyDisplay", "Currency", this.currencyDisplay.get(), SearchDataTypes.STRING));
-this.searchColumns.add(new SearchColumn("exchangeRate", "Exchange Rate", this.exchangeRate.get(), exchangeRateDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.add(new SearchColumn("changeGiven", "Change Given", this.changeGiven.get(), changeGivenDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.add(new SearchColumn("amountPaid", "Amount Paid", this.amountPaid.get(), amountPaidDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.add(new SearchColumn("amountWords", "Amount Words", this.amountWords.get(), SearchDataTypes.STRING));
-this.searchColumns.add(new SearchColumn("amountRefunded", "Amount Refunded", this.amountRefunded.get(), amountRefundedDisplay.get(), SearchDataTypes.MONEY));
-this.searchColumns.addAll(this.getDefaultSearchColumns());
-}
-
+    private void createSearchColumns() {
+        this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("receiptDate", "Receipt Date", this.receiptDate.get(), receiptDateDisplay.get(), SearchDataTypes.DATE));
+        this.searchColumns.add(new SearchColumn("customerID", "Customer ID", this.customerID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
+        this.searchColumns.add(new SearchColumn("customerDisplay", "Customer", this.customerDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("payMode", "Pay Mode", this.payMode.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
+        this.searchColumns.add(new SearchColumn("bankAcccountID", "Account ID", this.bankAcccountID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
+        this.searchColumns.add(new SearchColumn("bankAcccountDisplay", "Account", this.bankAcccountDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("totalBill", "Total Bill", this.totalBill.get(), totalBillDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("amountTered", "Amount Tendered", this.amountTered.get(), amountTeredDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("currencyID", "Currency ID", this.currencyID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
+        this.searchColumns.add(new SearchColumn("currencyDisplay", "Currency", this.currencyDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("exchangeRate", "Exchange Rate", this.exchangeRate.get(), exchangeRateDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("changeGiven", "Change Given", this.changeGiven.get(), changeGivenDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("amountPaid", "Amount Paid", this.amountPaid.get(), amountPaidDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("amountWords", "Amount Words", this.amountWords.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("amountRefunded", "Amount Refunded", this.amountRefunded.get(), amountRefundedDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.addAll(this.getDefaultSearchColumns());
+    }
 
     @Override
     public List<SearchColumn> getSearchColumns() {
@@ -547,12 +547,23 @@ this.searchColumns.addAll(this.getDefaultSearchColumns());
 
     public int saveReceipt() throws Exception {
         List<DBEntity> lReceipts = new ArrayList<>();
+        ReceiptInvoiceDA receiptInvoiceDA = new ReceiptInvoiceDA();
         lReceipts.add(this.receipt);
-        lReceipts.add(makeJournalEntries());
-        List<Invoice> invoices = this.receipt.getReceiptInvoices().stream().map(ReceiptInvoice::getInvoice).collect(Collectors.toList());
+        JournalEntry journalEntry = makeJournalEntries();
+        lReceipts.add(journalEntry);
+
+        List<Invoice> invoices = new ArrayList<>();
+        this.receipt.getReceiptInvoices().forEach(rInv -> {
+            Invoice invoice = rInv.getInvoice();
+            invoice.setAmountPaid(receiptInvoiceDA.getAmountPaid(invoice) + rInv.getAmount());
+            invoices.add(invoice);
+        });
         Map<List<? extends DBEntity>, Rights> map = new LinkedHashMap<>();
         map.put(lReceipts, Rights.Create);
         map.put(invoices, Rights.Update);
+        if (OptionsDA.getBooleanOptionValue(FinanceOptionKeys.ENABLE_AUTO_GENERAL_LEDGER_POSTING)) {
+           map.putAll(new JournalEntryDA(journalEntry).getPostMap());
+        }
         return super.processBatchList(map);
 
     }

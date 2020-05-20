@@ -78,7 +78,7 @@ public class ChartAccountController extends EditController {
             this.primaryKeyControl = txtAccountID;
             this.dbAccess = oChartAccountDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             cboAccountCategory.setOnAction(e -> this.setNextAccountID());
             cboAccountType.setOnAction(e -> accountTypeSelectected());
             chkContra.setOnAction(e -> setDefaultSelections());

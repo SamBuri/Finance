@@ -38,9 +38,6 @@ public class InvoiceDetails extends DBEntity {
     @OneToOne
     @JoinColumn(name = "saleOrderDetailsID", foreignKey = @ForeignKey(name = "fkSaleOrderDetailsIDInvoiceDetails"))
     private SaleOrderDetail saleOrderDetails;
-    @OneToOne
-    @JoinColumn(name = "sellToID", foreignKey = @ForeignKey(name = "fkSellToIDInvoiceDetails"))
-    private Customer sellTo;
     private int baseQuantity;
     @Size(max = 100, message = "The field: Unit Measure size cannot be greater than 100")
     @Column(length = 100)
@@ -63,11 +60,10 @@ public class InvoiceDetails extends DBEntity {
     public InvoiceDetails() {
     }
 
-    public InvoiceDetails(Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, Customer sellTo, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
+    public InvoiceDetails(Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
         this.invoice = invoice;
         this.item = item;
         this.saleOrderDetails = saleOrderDetails;
-        this.sellTo = sellTo;
         this.baseQuantity = baseQuantity;
         this.unitMeasure = unitMeasure;
         this.measureSize = measureSize;
@@ -117,14 +113,6 @@ public class InvoiceDetails extends DBEntity {
     public void setSaleOrderDetails(SaleOrderDetail saleOrderDetails) {
         this.saleOrderDetails = saleOrderDetails;
         setInvoiceDetailID();
-    }
-
-    public Customer getSellTo() {
-        return sellTo;
-    }
-
-    public void setSellTo(Customer sellTo) {
-        this.sellTo = sellTo;
     }
 
     public int getBaseQuantity() {
@@ -190,7 +178,6 @@ public class InvoiceDetails extends DBEntity {
     public void setOriginalAmount(double originalAmount) {
         this.originalAmount = originalAmount;
     }
-    
 
     public double getOriginalAmount() {
         return originalAmount;
@@ -199,8 +186,6 @@ public class InvoiceDetails extends DBEntity {
     public int getOriginalQuantity() {
         return originalQuantity;
     }
-    
-    
 
     public LookupData getLocation() {
         return location;

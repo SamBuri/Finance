@@ -137,11 +137,13 @@ call uspEditAccessObject ('BankLedger', 'Bank Ledger', '0');
 
 call uspEditAccessObject ('Receipt', 'Receipt', '0');
 call uspEditIDGenerator('Receipt', '0', 2, '', 0, '');
+call uspEditAccessObject ('ReceiptInvoice', 'Receipt Invoice', '0');
 
 call uspEditAccessObject ('Refund', 'Refund', '0');
 call uspEditIDGenerator('Refund', '0', 2, '', 0, '');
+call uspEditAccessObject ('RefundReceiptInvoice', 'Refund Receipt Invoices', '0');
 
-call uspEditAccessObject ('ReceiptInvoice', 'Receipt Invoice', '0');
+
 
 call uspEditAccessObject ('Paper', 'Paper', '0');
 

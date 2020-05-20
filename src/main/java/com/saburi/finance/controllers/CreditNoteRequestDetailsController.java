@@ -84,7 +84,7 @@ public class CreditNoteRequestDetailsController extends EditController {
             this.primaryKeyControl = txtCreditNoteDetailID;
             this.dbAccess = oCreditNoteRequestDetailsDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCreditNoteRequest, oCreditNoteRequestDA, "CreditNoteRequest", "Credit Note Request", cboCreditNoteRequest, true);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectInvoiceDetails, oInvoiceDetailsDA, "InvoiceDetails", "Invoice Details", cboInvoiceDetails, true);
         } catch (Exception e) {

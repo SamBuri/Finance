@@ -249,11 +249,11 @@ public class CreditNoteRequestDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("billToID", "Bill To Customer ID", this.billToID.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("billToName", "Bill To Customer Name", this.billToName.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("invoiceDate", "Invoice Date", this.invoiceDateDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("invoiceDate", "Invoice Date", this.invoiceDate.get(), this.invoiceDateDisplay.get(), SearchDataTypes.DATE));
         this.searchColumns.add(new SearchColumn("creditNoteRequestID", "Credit Note Request ID", this.creditNoteRequestID.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("requestDate", "Request Date", this.requestDateDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("requestDate", "Request Date", this.requestDate.get(),this.requestDateDisplay.get(), SearchDataTypes.DATE));
         this.searchColumns.add(new SearchColumn("requestStatus", "RequestStatus", this.requestStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("amountWords", "AmountWords", this.amountWords.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.addAll(this.getDefaultSearchColumns());

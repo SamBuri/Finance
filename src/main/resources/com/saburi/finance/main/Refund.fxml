@@ -16,10 +16,10 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tab?>
-<VBox fx:id = "mVBox" id="Refund"  spacing="10"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.RefundController">
+<VBox fx:id = "mVBox" id="Refund"  spacing="2"  xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.saburi.finance.controllers.RefundController">
     <children>
 
-        <GridPane vgap ="4" hgap="10">
+        <GridPane vgap ="2" hgap="4">
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
@@ -29,7 +29,7 @@
                     <ContextMenu fx:id ="cmuSelectCreditNote" id = "Refund">
                         <items>
                             <MenuItem mnemonicParsing="false" fx:id ="cmiLoad" id = "Refund" text="Load" />
-                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectCreditNote" id = "Refund" text="Select CreditNote" />
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectCreditNote" id = "Refund" text="Select Credit Note" />
                         </items>
                     </ContextMenu>
                 </contextMenu>
@@ -43,7 +43,7 @@
                 <contextMenu>
                     <ContextMenu fx:id ="cmuSelectBankAccount" id = "Refund">
                         <items>
-                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectBankAccount" id = "Refund" text="Select BankAccount" />
+                            <MenuItem mnemonicParsing="false" fx:id ="cmiSelectBankAccount" id = "Refund" text="Select Bank Account" />
                         </items>
                     </ContextMenu>
                 </contextMenu>
@@ -64,9 +64,7 @@
             <TextField fx:id = "txtCreditNoteDate" id = "Refund"  GridPane.rowIndex = "2" GridPane.columnIndex = "5" minWidth="100" editable = "false"/>
         </GridPane>
         <TableView fx:id="tblRefundReceiptInvoices" id = "RefundReceipts" VBox.vgrow="ALWAYS" minHeight="300" minWidth="450">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
+           
             <columns>
                 
                 <TableColumn id="Refund" fx:id="tbcRefundReceiptInvoiceReceiptID" text="Receipt ID" editable="false">

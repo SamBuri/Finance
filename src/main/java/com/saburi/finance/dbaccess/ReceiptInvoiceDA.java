@@ -37,7 +37,7 @@ public class ReceiptInvoiceDA extends DBAccess {
     private final SimpleStringProperty amountRefundedDisplay = new SimpleStringProperty(this, "amountRefundedDisplay");
     private final SimpleDoubleProperty netPaid = new SimpleDoubleProperty(this, "netPaid");
     private final SimpleStringProperty netPaidDisplay = new SimpleStringProperty(this, "netPaidDisplay");
-    private double previousPaidAmount = 0;
+   
 
     public ReceiptInvoiceDA() {
         createSearchColumns();
@@ -140,7 +140,7 @@ public class ReceiptInvoiceDA extends DBAccess {
         this.invoiceID.set(invoice.getInvoiceID());
         this.invoiceType.set(invoice.getInvoiceType());
         this.invoiceDisplay.set(invoice.getDisplayKey());
-        this.setInvoiceAmount(invoice.getAmount());
+        this.setInvoiceAmount(invoice.getAmount()+invoice.getAmountRefunded()-invoice.getAmountPaid());
     }
 
     public String getReceiptInvoiceID() {
@@ -176,7 +176,6 @@ public class ReceiptInvoiceDA extends DBAccess {
         receiptInvoice.setAmount(amount);
         this.amount.set(amount);
         this.amountDisplay.set(formatNumber(amount));
-        this.invoice.setAmountPaid(previousPaidAmount + amount);
     }
 
     @Override
@@ -212,9 +211,8 @@ public class ReceiptInvoiceDA extends DBAccess {
         if (this.invoice != null) {
             this.invoiceID.set(invoice.getId());
             this.invoiceDisplay.set(invoice.getDisplayKey());
-            this.invoiceAmount.set(invoice.getAmount());
-            this.invoiceAmountDisplay.set(formatNumber(invoice.getAmount()));
-            previousPaidAmount = invoice.getAmountPaid();
+            this.invoiceAmount.set(invoice.getAmount()-(invoice.getAmountPaid()-invoice.getAmountRefunded()));
+            this.invoiceAmountDisplay.set(formatNumber(invoiceAmount.get()));
             this.invoiceType.set(invoice.getInvoiceType());
 
         }
@@ -378,6 +376,10 @@ public class ReceiptInvoiceDA extends DBAccess {
 
     public List<ReceiptInvoice> getReceiptInvoices(Invoice invoice) {
         return getReceiptInvoices("invoice", invoice);
+    }
+    
+    public double getAmountPaid(Invoice invoice){
+      return this.getSum(ReceiptInvoice.class,"amount", "invoice", invoice);
     }
 
 }

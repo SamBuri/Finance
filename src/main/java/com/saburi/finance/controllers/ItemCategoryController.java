@@ -40,7 +40,7 @@ public class ItemCategoryController extends EditController {
             this.primaryKeyControl = txtItemCategoryID;
             this.dbAccess = oItemCategoryDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             cboItemGroup.setOnAction(e -> this.setNextItemCategoryID());
             this.chkHidden.disableProperty().bind(btnSave.textProperty().isEqualToIgnoreCase(FormMode.Save.name()));
         } catch (Exception e) {

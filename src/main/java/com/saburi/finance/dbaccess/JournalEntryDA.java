@@ -28,7 +28,6 @@ import com.saburi.common.utils.CommonEnums.EntryModes;
 import com.saburi.common.utils.CommonEnums.Rights;
 import com.saburi.finance.entities.JournalEntryDetail;
 import java.util.Map;
-import com.saburi.finance.utils.FinanceEnums;
 import com.saburi.finance.utils.FinanceOptionKeys;
 import java.util.LinkedHashMap;
 
@@ -370,9 +369,9 @@ public class JournalEntryDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("referenceNo", "Reference No", this.referenceNo.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("currencyID", "Currency ID", this.currencyID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("currencyDisplay", "Currency", this.currencyDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("baseAmount", "Base Amount", this.baseAmount.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("exchangeRate", "Exchange Rate", this.exchangeRate.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("baseAmount", "Base Amount", this.baseAmount.get(), this.baseAmountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("exchangeRate", "Exchange Rate", this.exchangeRate.get(), this.exchangeRateDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("amountWords", "Amount Words", this.amountWords.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("postStatus", "Post Status", this.postStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("journalType", "Journal Type", this.journalType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
@@ -560,6 +559,29 @@ public class JournalEntryDA extends DBAccess {
             map.put(toSaveEntities, Rights.Create);
             map.put(toUpdateEntities, Rights.Update);
             processBatchList(map);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Map<List<? extends DBEntity>, Rights> getPostMap() throws Exception {
+        try {
+            if (!isValid()) {
+                throw new Exception("Error Posting transactions");
+            }
+            List<DBEntity> toSaveEntities = new ArrayList<>();
+            List<DBEntity> toUpdateEntities = new ArrayList<>();
+//           
+            JournalEntryDetailDA.getJournalEntryDetailDAs(this.journalEntry.getJournalEntryDetails()).forEach((t) -> {
+                toSaveEntities.addAll(t.makeLedgerEntries().get(0));
+                toUpdateEntities.addAll(t.makeLedgerEntries().get(1));
+            });
+            this.setPostStatus(PostStatus.Posted);
+            Map<List<? extends DBEntity>, Rights> map = new LinkedHashMap<>();
+            toUpdateEntities.add(this.journalEntry);
+            map.put(toSaveEntities, Rights.Create);
+            map.put(toUpdateEntities, Rights.Update);
+            return map;
         } catch (Exception e) {
             throw e;
         }

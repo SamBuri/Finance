@@ -73,7 +73,7 @@ public class ItemTemplateController extends EditController {
             this.primaryKeyControl = txtTemplateName;
             this.dbAccess = oItemTemplateDA;
             this.restrainColumnConstraint = false;
-//            this.minSize = 360;
+//            this.prefSize = 360;
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectItemCategory, oItemCategoryDA, "LookupData", "Item Category", 700, 400, cboItemCategory, true);
             selectLookupData(FinanceNavigate.MAIN_CLASS, cmiSelectItemGroup, FinanceObjectNames.ITEMGROUP, "LookupData", "Item Group", 700, 400, cboItemGroup, false);
             selectLookupData(FinanceNavigate.MAIN_CLASS, cmiSelectVATItemGroup, FinanceObjectNames.VATITEMGROUP, "LookupData", "VAT Item Group", 700, 400, cboVATItemGroup, false);

@@ -1,17 +1,18 @@
 IdHelper, IdHelper, int, ,, , , ID_Helper, 100, false, false, 
 CustomerID, Customer ID, String, ,, , Primary, , 20, false, false, 
 CustomerName, Customer Name, String, ,, , , Display, 100, false, false, 
-CustomerCategory, Customer Category, String, LookupData,, , , , 100, false, true, CommonEnums
-PhoneNo, PhoneNo, String, ,, , , , 100, false, true, 
+CustomerCategory, Customer Category, String, LookupData,, OneToOne, Foreign, , 100, false, true, 2
+PhoneNo, Phone No, String, ,, , , , 100, false, true, 
 Email, Email, String, ,, , , , 100, false, true, 
 Address, Address, String, ,, , , , 200, false, true, 
-PriceGroup, Price Group, String, LookupData,, , , , 100, false, true, CommonEnums
-BillToCustomer, Bill To Customer, String, Customer,, , , , 100, false, true, 
-CustomerPostingGroup, Customer Posting Group, String, CustomerPostingGroup,, , , , 100, false, true, 
-BusinessGroup, Business Group, String, LookupData,, , , , 100, false, true, CommonEnums
-VATBusinessGroup, VAT Business Group, String, LookupData,, , , , 100, false, true, CommonEnums
-BillOnly, Bill Only, boolean
-AllowCredit, Allow Credit, boolean
+PriceGroup, Price Group, String, LookupData,, OneToOne, Foreign, , 100, false, true, 2
+DefaultSponser, Default Sponser, String, Customer,, OneToOne, Foreign, , 100, false, true, 
+CustomerPostingGroup, Customer Posting Group, String, CustomerPostingGroup,, OneToOne, Foreign, , 100, false, true, 
+BusinessGroup, Business Group, String, LookupData,, OneToOne, Foreign, , 100, false, true, 2
+VATBusinessGroup, VAT Business Group, String, LookupData,, OneToOne, Foreign, , 100, false, true, 2
+Sponser, Can Sponser, Boolean, ,, , , , 100, false, true, 
+SponserOnly, Sponser Only, boolean, ,, , , , 100, false, true, 
+AllowCredit, Allow Credit, boolean, ,, , , , 100, false, true, 
 ReferenceNo, Reference No, String, ,, , , , 20, false, true, 
-Balance, Balance, double
-Customers, Customers, List, Customers
+Balance, Balance, double, ,, , , , 100, false, true, 
+PossibleSponsers, Possible Sponsers, List, Customer,Customer>Customer>String>Customer, OneToMany, , , 100, false, true, 

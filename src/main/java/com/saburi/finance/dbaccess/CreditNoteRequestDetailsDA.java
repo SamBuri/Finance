@@ -301,7 +301,7 @@ public class CreditNoteRequestDetailsDA extends DBAccess {
             this.invoiceQuantity.set(invoiceDetail.getQuantity());
             this.invoiceAmount.set(invoiceDetail.getAmount());
             this.invoiceAmountDisplay.set(formatNumber(invoiceAmount.get()));
-            Customer sellTo = invoiceDetail.getSellTo();
+            Customer sellTo = invoiceDetail.getInvoice().getSellTo();
             if (sellTo != null) {
                 this.sellToID.set(sellTo.getCustomerID());
                 this.sellToName.set(sellTo.getDisplayKey());
@@ -335,9 +335,9 @@ public class CreditNoteRequestDetailsDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("unitMeasure", "Unit Measure", this.unitMeasure.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("requestStatus", "RequestStatus", this.requestStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
+        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(),this.unitPriceDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("requestStatus", "Request Status", this.requestStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }

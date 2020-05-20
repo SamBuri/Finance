@@ -72,7 +72,7 @@ public class VATPostingGroupController extends EditController {
             this.primaryKeyControl = txtVATPostingGroupID;
             this.dbAccess = oVATPostingGroupDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             this.setNextVATPostingGroupID();
             selectLookupData(cmiSelectVATBusinessGroup, FinanceObjectNames.VATBUSINESSGROUP, "VAT Business Group", 700, 400, cboVATBusinessGroup, false);
             selectLookupData(cmiSelectVATItemGroup, FinanceObjectNames.VATITEMGROUP, "VAT Item Group", 700, 400, cboVATItemGroup, false);

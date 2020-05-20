@@ -271,10 +271,10 @@ public class GeneralLedgerDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("accountName", "Account Name", this.accountName.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("accountType", "Account Type", this.accountType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("description", "Description", this.description.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("debit", "Debit", this.debit.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("credit", "Credit", this.credit.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("balance", "Balance", this.balance.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("debit", "Debit", this.debit.get(),this.debitDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("credit", "Credit", this.credit.get(),this.creditDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("balance", "Balance", this.balance.get(),this.balanceDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 

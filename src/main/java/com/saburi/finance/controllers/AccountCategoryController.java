@@ -48,7 +48,7 @@ public class AccountCategoryController extends EditController {
             this.primaryKeyControl = txtCategoryID;
             this.dbAccess = oAccountCategoryDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             cboAccountType.setOnAction(e -> this.AccountTypeSelected());
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectParentCategory, oAccountCategoryDA, "AccountCategory", "Parent Category", cboParentCategory, true);
             chkHidden.disableProperty().bind(btnSave.textProperty().isEqualToIgnoreCase(FormMode.Save.name()));

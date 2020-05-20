@@ -59,7 +59,7 @@ public class FinancialPeriodController extends EditController {
             this.primaryKeyControl = txtPeriodID;
             this.dbAccess = oFinancialPeriodDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             this.setNextPeriodID();
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCompany, new CompanyDA(), "Company", "Company", 700, 400, cboCompany, true);
         } catch (Exception e) {

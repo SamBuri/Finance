@@ -43,7 +43,7 @@ public class CurrencyController extends EditController {
             this.primaryKeyControl = txtCurrencyID;
             this.dbAccess = oCurrencyDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             this.setNextCurrencyID();
         } catch (Exception e) {
             errorMessage(e);

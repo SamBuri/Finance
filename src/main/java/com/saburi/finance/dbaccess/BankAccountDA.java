@@ -18,6 +18,8 @@ import com.saburi.finance.utils.FinanceEnums.BankAccountTypes;
 import com.saburi.finance.entities.Currency;
 import com.saburi.finance.entities.ChartAccount;
 import static com.saburi.common.utils.Utilities.formatNumber;
+import com.saburi.finance.utils.FinanceEnums;
+import com.saburi.finance.utils.FinanceEnums.PayModes;
 
 public class BankAccountDA extends DBAccess {
 
@@ -300,7 +302,7 @@ public class BankAccountDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("email", "Email", this.email.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("address", "Address", this.address.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("isDefault", "Is Default", this.isDefault.get(), SearchDataTypes.BOOLEAN));
-        this.searchColumns.add(new SearchColumn("balance", "Balance", this.balance.get(),balanceDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("balance", "Balance", this.balance.get(), balanceDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 
@@ -334,11 +336,17 @@ public class BankAccountDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.bankAccount);
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.bankAccount);
 
     }
@@ -445,6 +453,39 @@ public class BankAccountDA extends DBAccess {
             }
         }
 
+    }
+
+    private boolean isValid() throws Exception {
+        List<BankAccount> bankAccounts = super.find(BankAccount.class, "bankAccountType", this.bankAccount.getBankAccountType(), "isDefault", true);
+        bankAccounts.remove(bankAccount);
+        if (bankAccounts.size() > 0) {
+            throw new Exception("There is already an exisiting default Bank Account for account type: " + bankAccount.getBankAccountType().name() + ""
+                    + "\n You can't have more than one");
+        }
+        return true;
+    }
+
+    public List<BankAccount> getBankAccounts(BankAccountTypes bankAccountType) {
+        return this.getBankAccounts("bankAccountType", bankAccountType);
+    }
+
+    public List<BankAccountDA> getBankAccountDAs(BankAccountTypes bankAccountType) {
+        return toDaList(getBankAccounts(bankAccountType));
+    }
+
+    public static BankAccountTypes getBankAccountTypes(PayModes payMode) {
+        if (payMode.equals(PayModes.Bank)) {
+            return BankAccountTypes.Bank;
+        }
+        return BankAccountTypes.Cash;
+    }
+
+    public List<BankAccount> getBankAccounts(PayModes payModes) {
+        return this.getBankAccounts(getBankAccountTypes(payModes));
+    }
+
+    public List<BankAccountDA> getBankAccountDAs(PayModes payModes) {
+        return toDaList(getBankAccounts(getBankAccountTypes(payModes)));
     }
 
 }

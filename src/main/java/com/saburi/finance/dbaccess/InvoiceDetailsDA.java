@@ -24,7 +24,7 @@ import com.saburi.finance.entities.MeasureRelation;
 import java.time.LocalDate;
 import java.util.Optional;
 import com.saburi.finance.utils.FinanceEnums;
-import static com.saburi.common.utils.Utilities.formatDate;
+import static com.saburi.common.utils.Utilities.formatInteger;
 
 public class InvoiceDetailsDA extends DBAccess {
 
@@ -43,18 +43,22 @@ public class InvoiceDetailsDA extends DBAccess {
     private final SimpleObjectProperty sellToID = new SimpleObjectProperty(this, "sellToID");
     private Customer sellTo;
     private final SimpleIntegerProperty baseQuantity = new SimpleIntegerProperty(this, "baseQuantity");
+    private final SimpleStringProperty baseQuantityDisplay = new SimpleStringProperty(this, "baseQuantityDisplay");
     private final SimpleStringProperty unitMeasure = new SimpleStringProperty(this, "unitMeasure");
     private final SimpleIntegerProperty measureSize = new SimpleIntegerProperty(this, "measureSize");
+    private final SimpleStringProperty measureSizeDisplay = new SimpleStringProperty(this, "measureSizeDisplay");
     private final SimpleIntegerProperty quantity = new SimpleIntegerProperty(this, "quantity");
+    private final SimpleStringProperty quantityDisplay = new SimpleStringProperty(this, "quantityDisplay");
     private final SimpleDoubleProperty unitPrice = new SimpleDoubleProperty(this, "unitPrice");
     private final SimpleStringProperty unitPriceDisplay = new SimpleStringProperty(this, "unitPriceDisplay");
     private final SimpleDoubleProperty discount = new SimpleDoubleProperty(this, "discount");
     private final SimpleStringProperty discountDisplay = new SimpleStringProperty(this, "discountDisplay");
-    private final SimpleIntegerProperty originalQuantity = new SimpleIntegerProperty(this, "originalQuantity");
-    private final SimpleDoubleProperty originalAmount = new SimpleDoubleProperty(this, "originalAmount");
-    private final SimpleStringProperty originalAmountDisplay = new SimpleStringProperty(this, "originalAmountDisplay");
     private final SimpleDoubleProperty amount = new SimpleDoubleProperty(this, "amount");
     private final SimpleStringProperty amountDisplay = new SimpleStringProperty(this, "amountDisplay");
+    private final SimpleIntegerProperty originalQuantity = new SimpleIntegerProperty(this, "originalQuantity");
+    private final SimpleStringProperty originalQuantityDisplay = new SimpleStringProperty(this, "originalQuantityDisplay");
+    private final SimpleDoubleProperty originalAmount = new SimpleDoubleProperty(this, "originalAmount");
+    private final SimpleStringProperty originalAmountDisplay = new SimpleStringProperty(this, "originalAmountDisplay");
     private final SimpleStringProperty locationDisplay = new SimpleStringProperty(this, "locationDisplay");
     private final SimpleObjectProperty locationID = new SimpleObjectProperty(this, "locationID");
     private LookupData location;
@@ -88,15 +92,15 @@ public class InvoiceDetailsDA extends DBAccess {
         createSearchColumns();
     }
 
-    public InvoiceDetailsDA(Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, Customer sellTo, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
-        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, sellTo, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
+    public InvoiceDetailsDA(Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
+        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
         initialseProprties();
         createSearchColumns();
     }
 
-    public InvoiceDetailsDA(String persistenceUnit, Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, Customer sellTo, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
+    public InvoiceDetailsDA(String persistenceUnit, Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
         super(persistenceUnit);
-        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, sellTo, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
+        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
         initialseProprties();
         createSearchColumns();
     }
@@ -193,7 +197,6 @@ public class InvoiceDetailsDA extends DBAccess {
         this.setUnitMeasure(saleOrderDetails.getUnitMeasure());
         this.setUnitPrice(saleOrderDetails.getUnitPrice());
         this.setDiscount(saleOrderDetails.getDiscount());
-        this.setSellTo(saleOrderDetails.getSaleOrder().getSellTo());
     }
 
     public Customer getSellTo() {
@@ -212,13 +215,6 @@ public class InvoiceDetailsDA extends DBAccess {
         return this.sellTo != null ? new CustomerDA(this.sellTo) : null;
     }
 
-    public void setSellTo(Customer sellTo) {
-        invoiceDetails.setSellTo(sellTo);
-        this.sellTo = sellTo;
-        this.sellToID.set(sellTo.getId());
-        this.sellToDisplay.set(sellTo.getDisplayKey());
-    }
-
     public int getBaseQuantity() {
         return baseQuantity.get();
     }
@@ -226,7 +222,12 @@ public class InvoiceDetailsDA extends DBAccess {
     public void setBaseQuantity(int baseQuantity) {
         invoiceDetails.setBaseQuantity(baseQuantity);
         this.baseQuantity.set(baseQuantity);
+        this.baseQuantityDisplay.set(formatInteger(baseQuantity));
         this.setQuantity();
+    }
+
+    public String getBaseQuantityDisplay() {
+        return baseQuantityDisplay.get();
     }
 
     public String getUnitMeasure() {
@@ -245,7 +246,12 @@ public class InvoiceDetailsDA extends DBAccess {
     public void setMeasureSize(int measureSize) {
         invoiceDetails.setMeasureSize(measureSize);
         this.measureSize.set(measureSize);
+        this.measureSizeDisplay.set(formatInteger(measureSize));
         this.setQuantity();
+    }
+
+    public String getMeasureSizeDisplay() {
+        return measureSizeDisplay.get();
     }
 
     public int getOriginalQuantity() {
@@ -260,8 +266,13 @@ public class InvoiceDetailsDA extends DBAccess {
         int calQuantity = this.baseQuantity.get() * this.measureSize.get();
         invoiceDetails.setQuantity(calQuantity);
         this.quantity.set(calQuantity);
+        this.quantityDisplay.set(formatInteger(calQuantity));
         this.invoiceDetails.setOriginalQuantity(calQuantity);
         this.setAmount();
+    }
+
+    public String getQuantityDisplay() {
+        return quantityDisplay.get();
     }
 
     public double getUnitPrice() {
@@ -414,14 +425,10 @@ public class InvoiceDetailsDA extends DBAccess {
         if (this.invoice != null) {
             this.invoiceID.set(invoice.getId());
             this.invoiceDisplay.set(invoice.getDisplayKey());
-
-            this.invoiceDate.set(invoice.getInvoiceDate());
-            this.invoiceDateDisplay.set(formatDate(invoice.getInvoiceDate()));
-            this.invoiceType.set(invoice.getInvoiceType());
-            this.billTo = invoice.getBillTo();
-            if (this.billTo != null) {
-                this.billToID.set(billTo.getId());
-                this.billToDisplay.set(billTo.getDisplayKey());
+            this.sellTo = invoice.getSellTo();
+            if (this.sellTo != null) {
+                this.sellToID.set(sellTo.getId());
+                this.sellToDisplay.set(sellTo.getDisplayKey());
             }
         }
         this.item = invoiceDetails.getItem();
@@ -435,24 +442,24 @@ public class InvoiceDetailsDA extends DBAccess {
             this.saleOrderDetailsID.set(saleOrderDetails.getId());
             this.saleOrderDetailsDisplay.set(saleOrderDetails.getDisplayKey());
         }
-        this.sellTo = invoiceDetails.getSellTo();
-        if (this.sellTo != null) {
-            this.sellToID.set(sellTo.getId());
-            this.sellToDisplay.set(sellTo.getDisplayKey());
-        }
+
         this.baseQuantity.set(invoiceDetails.getBaseQuantity());
+        this.baseQuantityDisplay.set(formatInteger(invoiceDetails.getBaseQuantity()));
         this.unitMeasure.set(invoiceDetails.getUnitMeasure());
         this.measureSize.set(invoiceDetails.getMeasureSize());
-        this.originalQuantity.set(invoiceDetails.getOriginalQuantity());
+        this.measureSizeDisplay.set(formatInteger(invoiceDetails.getMeasureSize()));
         this.quantity.set(invoiceDetails.getQuantity());
+        this.quantityDisplay.set(formatInteger(invoiceDetails.getQuantity()));
         this.unitPrice.set(invoiceDetails.getUnitPrice());
         this.unitPriceDisplay.set(formatNumber(invoiceDetails.getUnitPrice()));
         this.discount.set(invoiceDetails.getDiscount());
         this.discountDisplay.set(formatNumber(invoiceDetails.getDiscount()));
-        this.originalAmount.set(invoiceDetails.getOriginalAmount());
-        this.originalAmountDisplay.set(formatNumber(originalAmount.get()));
         this.amount.set(invoiceDetails.getAmount());
-        this.amountDisplay.set(formatNumber(amount.get()));
+        this.amountDisplay.set(formatNumber(invoiceDetails.getAmount()));
+        this.originalQuantity.set(invoiceDetails.getOriginalQuantity());
+        this.originalQuantityDisplay.set(formatInteger(invoiceDetails.getOriginalQuantity()));
+        this.originalAmount.set(invoiceDetails.getOriginalAmount());
+        this.originalAmountDisplay.set(formatNumber(invoiceDetails.getOriginalAmount()));
         this.location = invoiceDetails.getLocation();
         if (this.location != null) {
             this.locationID.set(location.getId());
@@ -463,27 +470,23 @@ public class InvoiceDetailsDA extends DBAccess {
 
     private void createSearchColumns() {
         this.searchColumns.add(new SearchColumn("invoiceID", "Invoice ID", this.invoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
-        this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-        this.searchColumns.add(new SearchColumn("invoiceDate", "Invoice Date", this.invoiceDate.get(), invoiceDateDisplay.get(), SearchDataTypes.DATE));
-        this.searchColumns.add(new SearchColumn("invoiceType", "Invoice Type", this.invoiceType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-        this.searchColumns.add(new SearchColumn("billToID", "Bill To ID", this.billToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
-        this.searchColumns.add(new SearchColumn("billToDisplay", "Bill To", this.billToDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("itemID", "Item ID", this.itemID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("itemDisplay", "Item", this.itemDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("invoiceDetailID", "InvoiceDetailID", this.invoiceDetailID.get(), SearchDataTypes.STRING, false));
+        this.searchColumns.add(new SearchColumn("invoiceDetailID", "InvoiceDetailID", this.invoiceDetailID.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("saleOrderDetailsID", "Sale Order Detail ID", this.saleOrderDetailsID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("saleOrderDetailsDisplay", "Sale Order Detail", this.saleOrderDetailsDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("sellToID", "Sell To ID", this.sellToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("sellToDisplay", "Sell To", this.sellToDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("baseQuantity", "Base Quantity", this.baseQuantity.get(), SearchDataTypes.INTEGER));
+        this.searchColumns.add(new SearchColumn("baseQuantity", "Base Quantity", this.baseQuantity.get(), baseQuantityDisplay.get(), SearchDataTypes.INTEGER));
         this.searchColumns.add(new SearchColumn("unitMeasure", "Unit Measure", this.unitMeasure.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("originalQuantity", "Original Quantity", this.originalQuantity.get(), SearchDataTypes.INTEGER));
-        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), SearchDataTypes.INTEGER));
-        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(),unitPriceDisplay.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("discount", "Discount", this.discount.get(), discountDisplay.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("originalAmount", "Original Amount", this.originalAmount.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), measureSizeDisplay.get(), SearchDataTypes.INTEGER));
+        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), quantityDisplay.get(), SearchDataTypes.INTEGER));
+        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(), unitPriceDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("discount", "Discount", this.discount.get(), discountDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), amountDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("originalQuantity", "Original Quantity", this.originalQuantity.get(), originalQuantityDisplay.get(), SearchDataTypes.INTEGER));
+        this.searchColumns.add(new SearchColumn("originalAmount", "Original Amount", this.originalAmount.get(), originalAmountDisplay.get(), SearchDataTypes.MONEY));
         this.searchColumns.add(new SearchColumn("locationID", "Location ID", this.locationID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("locationDisplay", "Location", this.locationDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.addAll(this.getDefaultSearchColumns());

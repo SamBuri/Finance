@@ -73,7 +73,7 @@ public class CustomerPostingGroupController extends EditController {
             this.primaryKeyControl = txtCustomerPostingGroupID;
             this.dbAccess = oCustomerPostingGroupDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             this.setNextCustomerPostingGroupID();
             selectLookupData(cmiSelectCustomerGroup, FinanceObjectNames.CUSTOMERGROUP, "Customer Group", cboCustomerGroup, false);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectReceivableAccount, oChartAccountDA, oChartAccountDA.getChartAccountDAs(AccountTypes.Asset, false), "ChartAccount", "Receivable Account", cboReceivableAccount, true);

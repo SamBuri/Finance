@@ -107,6 +107,8 @@ public class FinanceSearchTree extends CommonSearchTree {
             new SearchItem(mainClass, new ReceiptInvoiceDA(), Revision, "ReceiptInvoice", "Receipt Invoice", false, triSalesRev),
             new SearchItem(mainClass, new RefundDA(), "Refund", "Refunds", false, triSales),
             new SearchItem(mainClass, new RefundDA(), Revision, "Refund", "Refunds", false, triSalesRev),
+            new SearchItem(mainClass, new RefundReceiptInvoiceDA(), "RefundReceiptInvoice", "Refund Receipt Invoices", false, triSales),
+            new SearchItem(mainClass, new RefundReceiptInvoiceDA(), Revision, "RefundReceiptInvoice", "Refund Receipt Invoices", false, triSalesRev),
             //            Invoicing End
             //            General
             new SearchItem(mainClass, new CustomerDA(), "Customer", "Customer", false),

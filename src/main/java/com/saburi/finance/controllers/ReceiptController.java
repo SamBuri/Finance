@@ -9,6 +9,7 @@ import com.saburi.common.controllers.EditController;
 import com.saburi.common.utils.CommonEnums.NumericDataTypes;
 import static com.saburi.common.utils.FXUIUtils.addRow;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
+import static com.saburi.common.utils.FXUIUtils.formatDatePicker;
 import static com.saburi.common.utils.FXUIUtils.formatValue;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getDouble;
@@ -20,12 +21,14 @@ import static com.saburi.common.utils.FXUIUtils.message;
 import static com.saburi.common.utils.FXUIUtils.selectItem;
 import static com.saburi.common.utils.FXUIUtils.selectPrevious;
 import static com.saburi.common.utils.FXUIUtils.validateNumber;
+import static com.saburi.common.utils.FXUIUtils.warningOK;
 import static com.saburi.common.utils.FXUIUtils.warningOk;
 import com.saburi.common.utils.JavaFXPDF;
 import com.saburi.common.utils.NumberToWord;
 import com.saburi.common.utils.PrintableColumn;
 import com.saburi.common.utils.Utilities.FormMode;
 import static com.saburi.common.utils.Utilities.defortNumberOptional;
+import static com.saburi.common.utils.Utilities.formatDate;
 import static com.saburi.common.utils.Utilities.formatNumber;
 import com.saburi.finance.dbaccess.BankAccountDA;
 import java.net.URL;
@@ -58,10 +61,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.input.KeyCode;
 
-
-
 public class ReceiptController extends EditController {
-
+    
     private final ReceiptDA oReceiptDA = new ReceiptDA();
     @FXML
     private TextField txtReceiptID;
@@ -95,22 +96,23 @@ public class ReceiptController extends EditController {
     private TextArea txaAmountWords;
     @FXML
     private TableView<ReceiptInvoiceDA> tblReceiptInvoices;
-    @FXML
-    private MenuItem cmiSelectReceiptInvoices;
+   
     private final CustomerDA oCustomerDA = new CustomerDA();
     private final BankAccountDA oBankAccountDA = new BankAccountDA();
     private final CurrencyDA oCurrencyDA = new CurrencyDA();
     private Customer selectedCustomer;
-    @FXML private TableColumn tbcReceiptInvoiceInvoiceID, tbcReceiptInvoiceInvoiceType, tbcReceiptInvoiceInvoiceAmount, tbcReceiptInvoiceAmount;
+    @FXML
+    private TableColumn tbcReceiptInvoiceInvoiceID, tbcReceiptInvoiceInvoiceType, tbcReceiptInvoiceInvoiceAmount, tbcReceiptInvoiceAmount;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-
+            
             loadDBEntities(oCustomerDA.getCustomers(), cboCustomer);
             cboPayMode.setItems(FXCollections.observableArrayList(PayModes.values()));
-            loadDBEntities(oBankAccountDA.getBankAccounts(), cboBankAcccount);
+            loadDBEntities(cboBankAcccount);
             loadDBEntities(oCurrencyDA.getCurrencys(), cboCurrency);
-
+            formatDatePicker(dtpReceiptDate);
             validateNumber(txtTotalBill);
             validateNumber(txtAmountTered);
             validateNumber(txtExchangeRate);
@@ -128,26 +130,26 @@ public class ReceiptController extends EditController {
             this.primaryKeyControl = txtReceiptID;
             this.dbAccess = oReceiptDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 620;
+            this.prefSize = 620;
             this.setNextReceiptID();
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCustomer, new CustomerDA(), "Customer", "Customer", 700, 400, cboCustomer, false);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectBankAcccount, oBankAccountDA, "BankAccount", "Bank Account", 700, 400, cboBankAcccount, false);
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCurrency, new CurrencyDA(), "Currency", "Currency", 700, 400, cboCurrency, true);
-
+            
             txtAmountTered.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
                 if (!newValue.matches("\\d*\\.")) {
                     txtAmountTered.setText(newValue.replaceAll("[^\\d*\\.\\,]", ""));
                     calculateTotalAmount();
                 }
             });
-
+            
             txtAmountPaid.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
                 if (!newValue.matches("\\d*\\.")) {
                     txtAmountPaid.setText(newValue.replaceAll("[^\\d*\\.\\,]", ""));
                     calculateReceiptInvoiceAmount();
                 }
             });
-
+            
             cboCurrency.setValue(oCurrencyDA.getDefaultCurrency());
             setExchangeRate();
             cboCurrency.setOnAction(e -> {
@@ -157,7 +159,7 @@ public class ReceiptController extends EditController {
                     calculateTotalAmount();
                 }
             });
-
+            
             cboCustomer.setOnAction(e -> {
                 this.selectedCustomer = (Customer) getEntity(cboCustomer);
                 List<ReceiptInvoiceDA> receiptInvoiceDAs = new CustomerDA(this.selectedCustomer).getToCreateDueReceiptInvoiceDAs();
@@ -167,14 +169,31 @@ public class ReceiptController extends EditController {
                         .sum();
                 txtTotalBill.setText(formatNumber(totalBill));
                 txtAmountTered.setText(formatNumber(totalBill));
-
+                
+            });
+            
+            cboPayMode.setOnAction(e -> {
+                PayModes payMode = (PayModes) cboPayMode.getValue();
+                if (payMode == null) {
+                    return;
+                }
+                List<BankAccount> bankAccounts = oBankAccountDA.getBankAccounts(payMode);
+                loadDBEntities(bankAccounts, cboBankAcccount);
+                int size = bankAccounts.size();
+                if (size == 1) {
+                    cboBankAcccount.getSelectionModel().select(bankAccounts.get(0));
+                } else if (size > 1) {
+                    BankAccount defaultBankAccount = bankAccounts.stream().filter((p) -> p.isisDefault() == true).findAny().orElse(null);
+                    cboBankAcccount.setValue(defaultBankAccount);
+                    
+                }
             });
         } catch (Exception e) {
             errorMessage(e);
         } finally {
         }
     }
-
+    
     @Override
     protected void save() {
         try {
@@ -192,20 +211,20 @@ public class ReceiptController extends EditController {
             double amountPaid = getDouble(txtAmountPaid, "Amount Paid");
             String amountWords = getText(txaAmountWords, "Amount Words");
             List<ReceiptInvoiceDA> receiptInvoicesDAs = tblReceiptInvoices.getItems();
-            receiptInvoicesDAs.removeIf((p) -> p.getInvoice() == null);
-            
+            receiptInvoicesDAs.removeIf((p) -> p.getInvoice() == null || p.getAmount() == 0);
+
             //            Printing data
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("Receipt ID", receiptID);
-            map.put("Receipt Date", receiptDate);
+            map.put("Receipt Date", formatDate(receiptDate));
             map.put("Customer", customer.getCustomerName());
             map.put("Pay Mode", payMode.name());
             map.put("Account", bankAcccount.getBankAccountName());
-            map.put("Total Bill", totalBill);
-            map.put("Amount Tendered", amountTered);
+            map.put("Total Bill", txtTotalBill.getText());
+            map.put("Amount Tendered", txtAmountTered.getText());
             map.put("Currency", currency.getCurrencyName());
-            map.put("Exchange Rate", exchangeRate);
-            map.put("Amount Paid", amountPaid);
+            map.put("Exchange Rate", txtExchangeRate.getText());
+            map.put("Amount Paid", txtAmountPaid.getText());
             
             JavaFXPDF javaFXPDF = new JavaFXPDF("Receipt", PageSize.A4, map, 2, 40, 200, 100, 20, 5, 70,
                     tblReceiptInvoices, Arrays.asList(new PrintableColumn(tbcReceiptInvoiceInvoiceID),
@@ -214,7 +233,7 @@ public class ReceiptController extends EditController {
                             new PrintableColumn(tbcReceiptInvoiceAmount, NumericDataTypes.DOUBLE, true)),
                     "Receipt for Customer: " + customer.getDisplayKey(), new String[]{"Customer", "Checked By"},
                     "Amount In Words: " + amountWords);
-
+            
             ReceiptDA receiptDA = new ReceiptDA(receiptID, receiptDate, customer, payMode, bankAcccount, totalBill, amountTered, currency, exchangeRate, changeGiven, amountPaid, amountWords);
             receiptInvoicesDAs.forEach(e -> {
                 e.setReceipt((Receipt) receiptDA.getReceipt());
@@ -223,15 +242,14 @@ public class ReceiptController extends EditController {
             String buttonText = btnSave.getText();
             if (buttonText.equalsIgnoreCase(FormMode.Save.name())) {
                 receiptDA.save();
-                message("Saved Successfully");
-                javaFXPDF.makePrintablePDFDocument();
+                if (warningOK("Operation Successful", "Would like to print")) {
+                    javaFXPDF.makePrintablePDFDocument();
+                }
                 clear();
             } else if (buttonText.equalsIgnoreCase(FormMode.Update.name())) {
                 receiptDA.update();
                 message("Updated Successfully");
-            }
-            
-            else if (buttonText.equalsIgnoreCase(FormMode.Print.name())) {
+            } else if (buttonText.equalsIgnoreCase(FormMode.Print.name())) {
                 javaFXPDF.modifyTitle();
                 javaFXPDF.makePrintablePDFDocument();
             }
@@ -242,7 +260,7 @@ public class ReceiptController extends EditController {
         } finally {
         }
     }
-
+    
     @Override
     protected void delete() {
         try {
@@ -259,18 +277,23 @@ public class ReceiptController extends EditController {
             errorMessage(e);
         }
     }
-
+    
     @Override
     public void loadData() {
         try {
             String receiptID = getText(txtReceiptID, "Receipt ID");
-
+            
             ReceiptDA receiptDA = oReceiptDA.get(receiptID);
             txtReceiptID.setText(receiptDA.getReceiptID());
             dtpReceiptDate.setValue((LocalDate) receiptDA.getReceiptDate());
             cboCustomer.setValue(receiptDA.getCustomer());
             cboPayMode.setValue(receiptDA.getPayMode());
-            cboBankAcccount.setValue(receiptDA.getBankAcccount());
+            List<BankAccount> bankAccounts = cboBankAcccount.getItems();
+            BankAccount bankAccount = receiptDA.getBankAccount();
+            if (!bankAccounts.contains(bankAccount)) {
+                cboBankAcccount.getItems().add(bankAccount);
+            }
+            cboBankAcccount.setValue(bankAccount);
             txtTotalBill.setText(formatNumber(receiptDA.getTotalBill()));
             txtAmountTered.setText(formatNumber(receiptDA.getAmountTered()));
             cboCurrency.setValue(receiptDA.getCurrency());
@@ -280,13 +303,12 @@ public class ReceiptController extends EditController {
             txaAmountWords.setText(receiptDA.getAmountWords());
             tblReceiptInvoices.setItems(FXCollections.observableArrayList(receiptDA.getReceiptInvoicesDAs()));
             
-
         } catch (Exception e) {
             errorMessage(e);
         }
-
+        
     }
-
+    
     private void setNextReceiptID() {
         try {
             if (btnSave.getText().equalsIgnoreCase(FormMode.Save.name())) {
@@ -296,15 +318,15 @@ public class ReceiptController extends EditController {
             errorMessage(e);
         }
     }
-
+    
     @Override
     protected void clear() {
         super.clear();
         addRow(tblReceiptInvoices, new ReceiptInvoiceDA());
         this.setNextReceiptID();
-
+        
     }
-
+    
     private void setExchangeRate() {
         Currency currency = (Currency) getEntity(cboCurrency);
         if (currency != null) {
@@ -312,7 +334,7 @@ public class ReceiptController extends EditController {
             calculateTotalAmount();
         }
     }
-
+    
     private void calculateTotalAmount() {
         double amountTendered = defortNumberOptional(txtAmountTered.getText());
         double ExchangeRate = defortNumberOptional(txtExchangeRate.getText());
@@ -324,7 +346,7 @@ public class ReceiptController extends EditController {
         txaAmountWords.setText(NumberToWord.toWords(amountPaid));
         txtChangeGiven.setText(formatNumber(change));
     }
-
+    
     public void setTableEditable() {
         tblReceiptInvoices.setEditable(true);
         // allows the individual cells to be selected
@@ -349,32 +371,38 @@ public class ReceiptController extends EditController {
                 event.consume();
             } else if (event.getCode() == KeyCode.DELETE) {
                 tblReceiptInvoices.getItems().removeAll(tblReceiptInvoices.getSelectionModel().getSelectedItems());
+                double totalBill = tblReceiptInvoices.getItems().stream()
+                        .mapToDouble(ReceiptInvoiceDA::getInvoiceAmount)
+                        .sum();
+                txtTotalBill.setText(formatNumber(totalBill));
+                txtAmountTered.setText(formatNumber(totalBill));
                 calculateTotalAmount();
             }
         });
+        
     }
-
+    
     private void calculateReceiptInvoiceAmount() {
         double amoutPaid = defortNumberOptional(txtAmountPaid.getText());
         for (ReceiptInvoiceDA receiptInvoiceDA : tblReceiptInvoices.getItems()) {
-
+            
             double invoiceAmount = receiptInvoiceDA.getInvoiceAmount();
             double toPayAmount;
-
+            
             if (invoiceAmount >= amoutPaid) {
                 toPayAmount = amoutPaid;
                 amoutPaid = 0;
             } else {
                 toPayAmount = invoiceAmount;
                 amoutPaid -= invoiceAmount;
-
+                
             }
-
+            
             receiptInvoiceDA.setAmount(toPayAmount);
-
+            
         }
-
+        
         tblReceiptInvoices.refresh();
     }
-
+    
 }

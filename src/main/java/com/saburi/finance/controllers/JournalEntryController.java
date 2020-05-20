@@ -61,6 +61,7 @@ import com.saburi.finance.utils.FinanceEnums.AccountGroups;
 import com.saburi.finance.utils.FinanceEnums.AccountTypes;
 import com.saburi.finance.utils.FinanceEnums.JournalTypes;
 import com.saburi.finance.utils.FinanceNavigate;
+import javafx.scene.control.Button;
 
 public class JournalEntryController extends EditController {
 
@@ -99,6 +100,8 @@ public class JournalEntryController extends EditController {
     private TableView<JournalEntryDetailDA> tblJournalEntryDetails;
     @FXML
     private MenuItem cmiSelectJournalAccount;
+    @FXML
+    private Button btnPost;
     private final FinancialPeriodDA oFinancialPeriodDA = new FinancialPeriodDA();
     private final CurrencyDA oCurrencyDA = new CurrencyDA();
     @FXML
@@ -140,15 +143,15 @@ public class JournalEntryController extends EditController {
             this.primaryKeyControl = txtJournalID;
             this.dbAccess = oJournalEntryDA;
             this.restrainColumnConstraint = false;
-//            this.minSize = 1000;
+//            this.prefSize = 1000;
             cboFinancialPeriod.setOnAction(e -> this.setNextJournalID());
             setJournalEntryDetailAccountGroup();
             setJournalEntryDetailAccountID();
             setJournalEntryDetailAmount();
             setJournalEntryDetailsAccountAction();
             setJournalEntryDetailNotes();
-            selectItem(FinanceNavigate.MAIN_CLASS,cmiSelectFinancialPeriod, new FinancialPeriodDA(), "Financial Period", "FinancialPeriod", 700, 400, cboFinancialPeriod, true);
-            selectItem(FinanceNavigate.MAIN_CLASS,cmiSelectCurrency, new CurrencyDA(), "Currency", "Currency", 700, 400, cboCurrency, true);
+            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectFinancialPeriod, new FinancialPeriodDA(), "Financial Period", "FinancialPeriod", 700, 400, cboFinancialPeriod, true);
+            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCurrency, new CurrencyDA(), "Currency", "Currency", 700, 400, cboCurrency, true);
             dtpEntryDate.setValue(LocalDate.now());
             cboCurrency.setOnAction(e -> {
                 Currency currency = (Currency) getEntity(cboCurrency);
@@ -170,7 +173,23 @@ public class JournalEntryController extends EditController {
 
         cboCurrency.setValue(oCurrencyDA.getDefaultCurrency());
         setExchangeRate();
-       
+
+        btnPost.setOnAction(e -> {
+            try {
+                this.editSuccessful = false;
+                String journalID = getText(txtJournalID, "Journal ID");
+                JournalEntryDA journalEntryDA = oJournalEntryDA.get(journalID);
+                journalEntryDA.post();
+                cboPostStatus.setValue(PostStatus.Posted);
+                this.dbAccess = journalEntryDA;
+                this.editSuccessful = true;
+                btnSave.setDisable(true);
+                btnPost.setVisible(false);
+            } catch (Exception ex) {
+                errorMessage(ex);
+            }
+        });
+
     }
 
     @Override
@@ -182,7 +201,7 @@ public class JournalEntryController extends EditController {
             LocalDate entryDate = getDate(dtpEntryDate, "EntryDate");
             String narration = getText(txaNarration);
             DocumentTypes documentType = (DocumentTypes) getSelectedValue(cboDocumentType, "DocumentType");
-            String documentNo =  getText(txtDocumentNo, "Document No");
+            String documentNo = getText(txtDocumentNo, "Document No");
             String referenceNo = getText(txtReferenceNo);
             Currency currency = (Currency) getEntity(cboCurrency, "Currency");
             double baseAmount = getDouble(txtBaseAmount, "Base Amount");
@@ -199,7 +218,7 @@ public class JournalEntryController extends EditController {
             List<JournalEntryDetailDA> journalEntryDetailDAs = tblJournalEntryDetails.getItems();
             journalEntryDetailDAs.removeIf((p) -> p.getAccountID() == null);
 
-            JournalEntryDA journalEntryDA = new JournalEntryDA(financialPeriod, journalID, entryDate, narration, documentType,documentNo, referenceNo, currency, baseAmount,
+            JournalEntryDA journalEntryDA = new JournalEntryDA(financialPeriod, journalID, entryDate, narration, documentType, documentNo, referenceNo, currency, baseAmount,
                     exchangeRate, amount, amountWords, postStatus, JournalTypes.General, EntryModes.Manual);
             journalEntryDetailDAs.forEach(a -> a.setJournalEntry((JournalEntry) journalEntryDA.getDBEntity()));
             journalEntryDA.setJournalEntryDetailsDAs(journalEntryDetailDAs);
@@ -258,6 +277,8 @@ public class JournalEntryController extends EditController {
             cboPostStatus.setValue(journalEntryDA.getPostStatus());
             tblJournalEntryDetails.setItems(FXCollections.observableArrayList(journalEntryDA.getJournalEntryDetailsDAs()));
             addRow(tblJournalEntryDetails, new JournalEntryDetailDA());
+            btnPost.setVisible(btnSave.getText().equalsIgnoreCase(FormMode.Update.name()) && ((PostStatus) journalEntryDA.getPostStatus()).equals(PostStatus.Pending));
+            
         } catch (Exception e) {
             errorMessage(e);
         }
@@ -265,7 +286,7 @@ public class JournalEntryController extends EditController {
     }
 
     @Override
-     protected void clear() {
+    protected void clear() {
         txtJournalID.clear();
         dtpEntryDate.setValue(null);
         txaNarration.clear();
@@ -418,7 +439,7 @@ public class JournalEntryController extends EditController {
             }
             switch (accountGroup) {
                 case COA:
-                    ChartAccountDA chartAccountDA = (ChartAccountDA) getSelectedItem(FinanceNavigate.MAIN_CLASS,new ChartAccountDA(), "ChartAccount", "Chart of Accounts", 400, 450, tblJournalEntryDetails, false);
+                    ChartAccountDA chartAccountDA = (ChartAccountDA) getSelectedItem(FinanceNavigate.MAIN_CLASS, new ChartAccountDA(), "ChartAccount", "Chart of Accounts", 400, 450, tblJournalEntryDetails, false);
                     if (chartAccountDA == null) {
                         return;
                     }
@@ -427,7 +448,7 @@ public class JournalEntryController extends EditController {
                     accountType = (AccountTypes) chartAccountDA.getAccountType();
                     break;
                 case Customer:
-                    CustomerDA customerDA = (CustomerDA) getSelectedItem(FinanceNavigate.MAIN_CLASS,new CustomerDA(), "Customer", "Customer", 400, 450, tblJournalEntryDetails, false);
+                    CustomerDA customerDA = (CustomerDA) getSelectedItem(FinanceNavigate.MAIN_CLASS, new CustomerDA(), "Customer", "Customer", 400, 450, tblJournalEntryDetails, false);
                     if (customerDA == null) {
                         return;
                     }
@@ -546,5 +567,4 @@ public class JournalEntryController extends EditController {
         }
     }
 
-   
 }

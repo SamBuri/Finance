@@ -57,7 +57,7 @@ public class InventoryPostingGroupController extends EditController {
             this.primaryKeyControl = txtInventoryPostingGroupID;
             this.dbAccess = oInventoryPostingGroupDA;
             this.restrainColumnConstraint = false;
-            this.minSize = 360;
+            this.prefSize = 360;
             this.setNextInventoryPostingGroupID();
             selectLookupData(FinanceNavigate.MAIN_CLASS,cmiSelectLocation, FinanceObjectNames.LOCATION, "view", "Location", 700, 400, cboLocation, false);
             selectLookupData(FinanceNavigate.MAIN_CLASS, cmiSelectInventoryGroup, FinanceObjectNames.INVENTORYGROUP, "LookupData", "Inventory Group", 700, 400, cboInventoryGroup, false);

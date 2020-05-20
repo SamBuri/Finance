@@ -27,6 +27,7 @@ import javafx.scene.control.TextArea;
 import com.saburi.common.dbaccess.StaffDA;
 import com.saburi.common.entities.Staff;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
+import static com.saburi.common.utils.FXUIUtils.formatDatePicker;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getEntity;
 import static com.saburi.common.utils.FXUIUtils.getSelectedItem;
@@ -114,16 +115,18 @@ public class CreditNoteApprovalController extends EditController {
             validateNumber(txtInvoiceAmount);
             formatValue(txtAmount);
             formatValue(txtInvoiceAmount);
+            formatDatePicker(dtpRequestDate);
+            formatDatePicker(dtpApprovalDate);
             tblCreditNoteRequestDetails.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
             setTableEditable(tblCreditNoteRequestDetails);
             addRow(tblCreditNoteRequestDetails, new CreditNoteRequestDetailsDA());
             this.primaryKeyControl = txtCreditNoteRequestID;
             this.dbAccess = oCreditNoteApprovalDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
 
 //            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCreditNoteRequest, oCreditNoteRequestDA, "CreditNoteRequest", "Credit Note Request", cboCreditNoteRequest, true);
-            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectApprovedBy, oStaffDA, "Staff", "Approved By", cboApprovedBy, true);
+            selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectApprovedBy, oStaffDA, "Staff", "Staff", cboApprovedBy, true);
             txtCreditNoteRequestID.focusedProperty().addListener((ov, t, t1) -> {
                 if (t) {
                     this.loadCreditNoteRequest();
@@ -132,11 +135,11 @@ public class CreditNoteApprovalController extends EditController {
             dtpRequestDate.disableProperty().set(true);
             dtpApprovalDate.setValue(LocalDate.now());
             cmiPendingLoad.visibleProperty().set(btnSave.getText().equalsIgnoreCase(FormMode.Save.name()));
-           cmiPendingLoad.setOnAction(e->selectCreditNoteRequest());
+            cmiPendingLoad.setOnAction(e -> selectCreditNoteRequest());
             selectItem(FinanceNavigate.MAIN_CLASS, cmiPendingLoad, oCreditNoteRequestDA,
                     CreditNoteRequestDA.getCreditNoteRequestDAs(oCreditNoteRequestDA.getPendingCreditNoteRequests()),
                     "CreditNoteRequest", "Credit Note Request", txtCreditNoteRequestID, true);
-           
+
         } catch (Exception e) {
             errorMessage(e);
         } finally {
@@ -218,8 +221,8 @@ public class CreditNoteApprovalController extends EditController {
             txtInvoiceAmount.setText(formatNumber(creditNoteApprovalDA.getInvoiceAmount()));
             this.creditNoteRequest = creditNoteApprovalDA.getCreditNoteRequest();
             tblCreditNoteRequestDetails.setItems(FXCollections.observableArrayList(creditNoteApprovalDA.getCreditNoteRequestDetailsDAs()));
-             
-            this.btnDelete.disableProperty().set(!rStatus.equals(RequestStatus.Approved)||rStatus.equals(RequestStatus.Cancelled));
+
+            this.btnDelete.disableProperty().set(!rStatus.equals(RequestStatus.Approved) || rStatus.equals(RequestStatus.Cancelled));
         } catch (Exception e) {
             errorMessage(e);
         }
@@ -229,17 +232,20 @@ public class CreditNoteApprovalController extends EditController {
     public void loadCreditNoteRequest() {
         try {
             String creditNoteRequestlID = getText(txtCreditNoteRequestID);
-            if(creditNoteRequestlID.isBlank())return;
+            if (creditNoteRequestlID.isBlank()) {
+                return;
+            }
             CreditNoteRequestDA creditNoteRequestDA = oCreditNoteRequestDA.get(creditNoteRequestlID);
             this.loadCreditNoteRequestData(creditNoteRequestDA);
-           
+
         } catch (Exception e) {
-            Platform.runLater(()->errorMessage(e));
+            Platform.runLater(() -> errorMessage(e));
         }
     }
-        private void loadCreditNoteRequestData(CreditNoteRequestDA creditNoteRequestDA) {
+
+    private void loadCreditNoteRequestData(CreditNoteRequestDA creditNoteRequestDA) {
         try {
-           
+
             txtInvoice.setText(creditNoteRequestDA.getInvoiceDisplay());
             dtpRequestDate.setValue((LocalDate) creditNoteRequestDA.getRequestDate());
             txaRequestNotes.setText(creditNoteRequestDA.getNotes());
@@ -250,24 +256,25 @@ public class CreditNoteApprovalController extends EditController {
             cboRequestStatus.setValue(creditNoteRequestDA.getRequestStatus());
             tblCreditNoteRequestDetails.setItems(FXCollections.observableArrayList(creditNoteRequestDA.getCreditNoteRequestDetailsDAs()));
             this.creditNoteRequest = creditNoteRequestDA.getCreditNoteRequest();
-           
+
         } catch (Exception e) {
             errorMessage(e);
         }
 
     }
-        private void selectCreditNoteRequest(){
-            try {
-                selectItem(FinanceNavigate.MAIN_CLASS, cmiPendingLoad, oCreditNoteRequestDA,
+
+    private void selectCreditNoteRequest() {
+        try {
+            selectItem(FinanceNavigate.MAIN_CLASS, cmiPendingLoad, oCreditNoteRequestDA,
                     CreditNoteRequestDA.getCreditNoteRequestDAs(oCreditNoteRequestDA.getPendingCreditNoteRequests()),
                     "CreditNoteRequest", "Credit Note Request", txtCreditNoteRequestID, true);
-                CreditNoteRequestDA creditNoteRequestDA = (CreditNoteRequestDA) getSelectedItem(mainClass, oCreditNoteRequestDA,
-                        CreditNoteRequestDA.getCreditNoteRequestDAs(oCreditNoteRequestDA.getPendingCreditNoteRequests()),
+            CreditNoteRequestDA creditNoteRequestDA = (CreditNoteRequestDA) getSelectedItem(mainClass, oCreditNoteRequestDA,
+                    CreditNoteRequestDA.getCreditNoteRequestDAs(oCreditNoteRequestDA.getPendingCreditNoteRequests()),
                     "CreditNoteRequest", "Credit Note Request", 0, 0, txtCreditNoteRequestID, true);
-                loadCreditNoteRequestData(creditNoteRequestDA);
-            } catch (Exception e) {
-               Platform.runLater(()->errorMessage(e));
-            }
+            loadCreditNoteRequestData(creditNoteRequestDA);
+        } catch (Exception e) {
+            Platform.runLater(() -> errorMessage(e));
         }
+    }
 
 }

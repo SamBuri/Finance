@@ -148,7 +148,7 @@ public  class FinanceSceneController extends CommonSceneController{
 //        Begin Accountant
         editMenuItemClick(spmJournalEntryAdd, "JournalEntry", "Journal Entry", FormMode.Save);
         editMenuItemClick(spmJournalEntryUpdate, "JournalEntry", "Journal Entry", FormMode.Update);
-        viewMenuItemClick(spmJournalEntryView, new JournalEntryDA(), "JournalEntry", "JournalEntryView", "Journal Entry", false, true);
+        viewMenuItemClick(spmJournalEntryView, new JournalEntryDA(), "JournalEntry", "Journal Entry", false, true);
         viewMenuItemClickIgnoreParent(mnuGeneralLedger, new GeneralLedgerDA(), "GeneralLedger", "General Ledger", true, true);
 
 //End Account

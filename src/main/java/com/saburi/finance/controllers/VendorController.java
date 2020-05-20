@@ -85,7 +85,7 @@ public class VendorController extends EditController {
             this.primaryKeyControl = txtVendorID;
             this.dbAccess = oVendorDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             this.setNextVendorID();
             selectLookupData(cmiSelectVendorCategory, FinanceObjectNames.VENDORCATEGORY, "Vendor Category", 700, 400, cboVendorCategory, false);
             selectLookupData(cmiSelectPriceGroup, FinanceObjectNames.PRICEGROUP, "Price Group", 700, 400, cboPriceGroup, false);

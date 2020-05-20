@@ -88,7 +88,7 @@ public class GeneralPostingGroupController extends EditController {
             this.primaryKeyControl = txtGeneralPostingID;
             this.dbAccess = oGeneralPostingGroupDA;
             this.restrainColumnConstraint = false;
-            //this.minSize = 360;
+            //this.prefSize = 360;
             this.setNextGeneralPostingID();
             selectLookupData(cmiSelectBusinessGroup, FinanceObjectNames.BUSINESSGROUP, "Business Group", cboBusinessGroup, false);
             selectLookupData(cmiSelectItemGroup, FinanceObjectNames.ITEMGROUP, "Item Group", cboItemGroup, false);
