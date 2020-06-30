@@ -119,12 +119,8 @@ public class CustomerController extends EditController {
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectCustomerPostingGroup, oCustomerPostingGroupDA, "CustomerPostingGroup", "Customer Posting Group", cboCustomerPostingGroup, true);
             selectLookupData(cmiSelectBusinessGroup, FinanceObjectNames.BUSINESSGROUP, "Business Group", cboBusinessGroup, false);
             selectLookupData(cmiSelectVATBusinessGroup, FinanceObjectNames.VATBUSINESSGROUP, "VAT Business Group", cboVATBusinessGroup, false);
-            chkSponserOnly.disableProperty().bind(Bindings.not(chkSponser.selectedProperty()));
-            chkSponser.setOnAction(e -> {
-                if (!chkSponser.isSelected()) {
-                    chkSponserOnly.setSelected(false);
-                }
-            });
+            
+            initExtension();
         } catch (IOException e) {
             errorMessage(e);
         } finally {
@@ -302,6 +298,16 @@ public class CustomerController extends EditController {
         } catch (Exception e) {
             errorMessage(e);
         }
+    }
+    
+    private void initExtension(){
+        chkSponserOnly.disableProperty().bind(Bindings.not(chkSponser.selectedProperty()));
+            chkSponser.setOnAction(e -> {
+                if (!chkSponser.isSelected()) {
+                    chkSponserOnly.setSelected(false);
+                }
+            });
+        this.txtBalance.setEditable(false);
     }
 
 }

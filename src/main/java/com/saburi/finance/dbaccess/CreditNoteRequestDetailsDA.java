@@ -335,8 +335,8 @@ public class CreditNoteRequestDetailsDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("unitMeasure", "Unit Measure", this.unitMeasure.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(),this.unitPriceDisplay.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(), this.unitPriceDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("requestStatus", "Request Status", this.requestStatus.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
@@ -451,6 +451,18 @@ public class CreditNoteRequestDetailsDA extends DBAccess {
         return super.find(CreditNoteRequestDetails.class, columName, value);
     }
 
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("creditNoteRequest", creditNoteRequestDetails.getCreditNoteRequest(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("invoiceDetails", creditNoteRequestDetails.getInvoiceDetails(), SearchColumn.SearchType.Equal));
+        List<CreditNoteRequestDetails> lCreditNoteRequestDetails = super.find(CreditNoteRequestDetails.class, lSearchColumns);
+        lCreditNoteRequestDetails.removeIf((p) -> p.getId().equals(creditNoteRequestDetails.getId()));
+        if (lCreditNoteRequestDetails.size() > 0) {
+            throw new Exception("The record with Credit Note Request: " + creditNoteRequestDetails.getCreditNoteRequest().getDisplayKey() + " and Invoice Details: " + creditNoteRequestDetails.getInvoiceDetails().getDisplayKey() + "already exists");
+        }
+        return true;
+    }
+
     @Override
     public List<DBAccess> getRevisions() {
         try {
@@ -491,7 +503,7 @@ public class CreditNoteRequestDetailsDA extends DBAccess {
         }
         this.invoiceDetail.setQuantity(quantityBalance - getBaseQuantity());
         this.invoiceDetail.setAmount(amountBalance - getAmount());
-        return true;
+        return isValid();
     }
 
 }

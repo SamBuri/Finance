@@ -8,6 +8,7 @@ import com.saburi.common.controllers.EditController;
 import com.saburi.common.utils.CommonEnums.EntryModes;
 import com.saburi.common.utils.EditCell;
 import static com.saburi.common.utils.FXUIUtils.addRow;
+import static com.saburi.common.utils.FXUIUtils.addRowOnce;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
 import static com.saburi.common.utils.FXUIUtils.getDate;
 import static com.saburi.common.utils.FXUIUtils.getDouble;
@@ -327,7 +328,7 @@ public class JournalEntryController extends EditController {
                     .get(event.getTablePosition().getRow()))
                     .setAccountGroup(accountGroup);
             tblJournalEntryDetails.refresh();
-            addRow(tblJournalEntryDetails, new JournalEntryDetailDA());
+            addRowOnce(tblJournalEntryDetails, new JournalEntryDetailDA());
         });
     }
 
@@ -383,7 +384,7 @@ public class JournalEntryController extends EditController {
                     .setAmount(defortNumberOptional(value));
             tblJournalEntryDetails.refresh();
             calculateTotalAmount();
-            addRow(tblJournalEntryDetails, new JournalEntryDetailDA());
+            addRowOnce(tblJournalEntryDetails, new JournalEntryDetailDA());
         });
     }
 
@@ -397,7 +398,7 @@ public class JournalEntryController extends EditController {
                     .setAccountAction((AccountActions) value);
             tblJournalEntryDetails.refresh();
             calculateTotalAmount();
-            addRow(tblJournalEntryDetails, new JournalEntryDetailDA());
+            addRowOnce(tblJournalEntryDetails, new JournalEntryDetailDA());
         });
     }
 
@@ -410,7 +411,7 @@ public class JournalEntryController extends EditController {
                     .get(event.getTablePosition().getRow()))
                     .setNotes(value);
             tblJournalEntryDetails.refresh();
-            addRow(tblJournalEntryDetails, new JournalEntryDetailDA());
+            addRowOnce(tblJournalEntryDetails, new JournalEntryDetailDA());
         });
     }
 

@@ -6,6 +6,8 @@
 package com.saburi.finance.controllers;
 
 import com.saburi.common.controllers.CommonSceneController;
+import com.saburi.common.utils.CommonEnums;
+import com.saburi.common.utils.CommonEnums.ViewMenuTypes;
 import com.saburi.common.utils.FXUIUtils;
 import static com.saburi.common.utils.Navigation.loadSearchEngine;
 import com.saburi.common.utils.Utilities.FormMode;
@@ -25,16 +27,15 @@ import java.util.ResourceBundle;
  *
  * @author Hp
  */
-public  class FinanceSceneController extends CommonSceneController{
+public class FinanceSceneController extends CommonSceneController {
 
-   
     @FXML
     private MenuItem mnuVendorAdd, mnuVendorUpdate, mnuVendorView;
     @FXML
     private MenuItem mnuCurrencyAdd, mnuCurrencyUpdate, mnuCurrencyView;
     @FXML
     private MenuItem mnuAccountCategoryAdd, mnuAccountCategoryUpdate, mnuAccountCategoryView;
-    
+
     @FXML
     private MenuItem mnuChartAccountAdd, mnuChartAccountUpdate, mnuChartAccountView;
     @FXML
@@ -56,10 +57,10 @@ public  class FinanceSceneController extends CommonSceneController{
     @FXML
     private MenuItem mnuFinancialPeriodAdd, mnuFinancialPeriodUpdate, mnuFinancialPeriodView;
     @FXML
-    private MenuItem spmJournalEntryAdd, spmJournalEntryUpdate, spmJournalEntryView;
+    private MenuItem mnuJournalEntryAdd, mnuJournalEntryUpdate, mnuJournalEntryView;
     @FXML
     private MenuItem mnuGeneralLedger;
-   
+
     @FXML
     private MenuItem mnuMeasureGroupAdd, mnuMeasureGroupUpdate, mnuMeasureGroupView;
 
@@ -69,7 +70,6 @@ public  class FinanceSceneController extends CommonSceneController{
     private MenuItem mnuItemTemplateAdd, mnuItemTemplateUpdate, mnuItemTemplateView;
     @FXML
     private MenuItem mnuItemAdd, mnuItemUpdate, mnuItemView;
-
 
     @FXML
     private MenuItem spmSaleOrderAdd, spmSaleOrderUpdate, spmSaleOrderView;
@@ -88,7 +88,7 @@ public  class FinanceSceneController extends CommonSceneController{
     @FXML
     private MenuItem mnuRefundNew, mnuRefundEdit, mnuRefundView;
     @FXML
-    SplitMenuButton spmCustomer, spmSales, spmJournalEntry;
+    SplitMenuButton spmCustomer, spmFinance;
 
     @Override
     protected void init() throws IOException {
@@ -146,13 +146,12 @@ public  class FinanceSceneController extends CommonSceneController{
 
 // End SettingFinance ***********************************************************************
 //        Begin Accountant
-        editMenuItemClick(spmJournalEntryAdd, "JournalEntry", "Journal Entry", FormMode.Save);
-        editMenuItemClick(spmJournalEntryUpdate, "JournalEntry", "Journal Entry", FormMode.Update);
-        viewMenuItemClick(spmJournalEntryView, new JournalEntryDA(), "JournalEntry", "Journal Entry", false, true);
+        editMenuItemClick(mnuJournalEntryAdd, "JournalEntry", "Journal Entry", FormMode.Save);
+        editMenuItemClick(mnuJournalEntryUpdate, "JournalEntry", "Journal Entry", FormMode.Update);
+        viewMenuItemClick(mnuJournalEntryView, new JournalEntryDA(), "JournalEntry", "Journal Entry", false, true);
         viewMenuItemClickIgnoreParent(mnuGeneralLedger, new GeneralLedgerDA(), "GeneralLedger", "General Ledger", true, true);
 
 //End Account
-       
         editMenuItemClick(mnuMeasureGroupAdd, "MeasureGroup", "Measure Group", FormMode.Save);
         editMenuItemClick(mnuMeasureGroupUpdate, "MeasureGroup", "Measure Group", FormMode.Update);
         viewMenuItemClick(mnuMeasureGroupView, new MeasureGroupDA(), "MeasureGroup", "Measure Group", false, true);
@@ -175,11 +174,11 @@ public  class FinanceSceneController extends CommonSceneController{
 
         editMenuItemClick(spmInvoiceAdd, "Invoice", "Invoice", FormMode.Save);
         editMenuItemClick(spmInvoicePrint, "Invoice", "Invoice", FormMode.Print);
-        viewMenuItemClick(spmInvoiceView, new InvoiceDA(), "Invoice", "Invoice", false, true, false, true);
+        viewMenuItemClick(spmInvoiceView, new InvoiceDA(), "Invoice", "Invoice", false, true, ViewMenuTypes.PrintNew);
 
         editMenuItemClick(spmReceiptAdd, FontAwesomeIcon.MONEY, "Receipt", "Receipt", FormMode.Save);
         editMenuItemClick(spmReceiptPrint, "Receipt", "Receipt", FormMode.Print);
-        viewMenuItemClick(spmReceiptView, new ReceiptDA(), "Receipt", "Receipt", false, true, false, true);
+        viewMenuItemClick(spmReceiptView, new ReceiptDA(), "Receipt", "Receipt", false, true, ViewMenuTypes.PrintNew);
 
         editMenuItemClick(mnuCreditNoteRequestNew, "CreditNoteRequest", "Credit Note Request", FormMode.Save);
         editMenuItemClick(mnuCreditNoteRequestEdit, "CreditNoteRequest", "Credit Note Request", FormMode.Update);
@@ -199,8 +198,7 @@ public  class FinanceSceneController extends CommonSceneController{
 
     private void setIcons() {
         spmCustomer.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.USER));
-        spmSales.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.MONEY));
-        spmJournalEntry.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.BOOK));
+        spmFinance.setGraphic(GlyphsDude.createIcon(FontAwesomeIcon.MONEY));
     }
 
     @Override

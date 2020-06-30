@@ -42,7 +42,7 @@ public class FinanceEnums {
     }
 
     public enum InvoiceTypes {
-        Direct, Ordered
+        Direct, Ordered, Popup
     }
 
     public enum EntryPoints {

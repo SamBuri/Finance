@@ -102,7 +102,7 @@ public class ReceiptController extends EditController {
     private final CurrencyDA oCurrencyDA = new CurrencyDA();
     private Customer selectedCustomer;
     @FXML
-    private TableColumn tbcReceiptInvoiceInvoiceID, tbcReceiptInvoiceInvoiceType, tbcReceiptInvoiceInvoiceAmount, tbcReceiptInvoiceAmount;
+    private TableColumn tbcReceiptInvoiceInvoiceID, tbcReceiptInvoiceInvoiceAmount, tbcReceiptInvoiceAmount;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -228,7 +228,6 @@ public class ReceiptController extends EditController {
             
             JavaFXPDF javaFXPDF = new JavaFXPDF("Receipt", PageSize.A4, map, 2, 40, 200, 100, 20, 5, 70,
                     tblReceiptInvoices, Arrays.asList(new PrintableColumn(tbcReceiptInvoiceInvoiceID),
-                            new PrintableColumn(tbcReceiptInvoiceInvoiceType),
                             new PrintableColumn(tbcReceiptInvoiceInvoiceAmount, NumericDataTypes.DOUBLE),
                             new PrintableColumn(tbcReceiptInvoiceAmount, NumericDataTypes.DOUBLE, true)),
                     "Receipt for Customer: " + customer.getDisplayKey(), new String[]{"Customer", "Checked By"},

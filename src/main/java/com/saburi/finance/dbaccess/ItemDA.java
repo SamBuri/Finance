@@ -509,8 +509,7 @@ public class ItemDA extends DBAccess {
         } else if (customer.getPriceGroup() == null) {
             return this.getUnitPrice();
         } else {
-            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItemID().concat(
-                    customer.getPriceGroup().getLookupDataID()));
+            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItem(), customer.getPriceGroup());
             if (exists(itemPriceGroup)) {
                 return itemPriceGroup.getUnitPrice();
             } else {
@@ -526,7 +525,7 @@ public class ItemDA extends DBAccess {
         if (customer.getPriceGroup() == null) {
             return 0;
         } else {
-            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(getItemID().concat(customer.getPriceGroup().getLookupDataID()));
+            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItem(), customer.getPriceGroup());
             if (exists(itemPriceGroup)) {
                 return itemPriceGroup.getDiscount();
             } else {
@@ -543,8 +542,7 @@ public class ItemDA extends DBAccess {
         } else if (customerDA.getPriceGroup() == null) {
             return this.getUnitPrice();
         } else {
-            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItemID().concat(
-                    customerDA.getPriceGroup().getLookupDataID()));
+            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItem(), customerDA.getPriceGroup());
             if (exists(itemPriceGroup)) {
                 return itemPriceGroup.getUnitPrice();
             } else {
@@ -562,7 +560,7 @@ public class ItemDA extends DBAccess {
         if (customerDA.getPriceGroup() == null) {
             return 0;
         } else {
-            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(getItemID().concat(customerDA.getPriceGroup().getLookupDataID()));
+            ItemPriceGroup itemPriceGroup = new ItemPriceGroupDA().getItemPriceGroup(this.getItem(), customerDA.getPriceGroup());
             if (exists(itemPriceGroup)) {
                 return itemPriceGroup.getDiscount();
             } else {
@@ -570,8 +568,8 @@ public class ItemDA extends DBAccess {
             }
         }
     }
-    
-    public MeasureRelation getMeasureRelation(UnitMeasureUsages unitMeasureUsage){
+
+    public MeasureRelation getMeasureRelation(UnitMeasureUsages unitMeasureUsage) {
         List<MeasureRelation> measureRelations = new MeasureGroupDA().getMeasureGroup(item.getMeasureGroup().getMeasureGroupID())
                 .getMeasureRelations();
 
@@ -580,10 +578,10 @@ public class ItemDA extends DBAccess {
                 .filter((p) -> p.getDefaultUsage().equals(unitMeasureUsage))
                 .findFirst();
         if (invoiceMeasureRelation.isEmpty()) {
-         
+
             return new MeasureRelation(measureGroup, measureGroup.getBaseUnitMeasure(), 1, null);
         } else {
-           return invoiceMeasureRelation.get();
+            return invoiceMeasureRelation.get();
         }
     }
 

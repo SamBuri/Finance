@@ -24,6 +24,7 @@ import org.hibernate.envers.RevisionType;
 import com.saburi.finance.utils.FinanceEnums.AccountGroups;
 import com.saburi.finance.entities.JournalEntry;
 import com.saburi.common.entities.LookupData;
+import static com.saburi.common.utils.Utilities.formatInteger;
 import com.saburi.finance.entities.Vendor;
 import com.saburi.finance.entities.VendorLedger;
 import java.time.LocalDate;
@@ -35,7 +36,8 @@ import static com.saburi.common.utils.Utilities.formatNumber;
 public class JournalEntryDetailDA extends DBAccess {
 
     private JournalEntryDetail journalEntryDetail = new JournalEntryDetail();
-    private final SimpleStringProperty journalEntryDetailID = new SimpleStringProperty(this, "journalEntryDetailID");
+    private final SimpleIntegerProperty journalEntryDetailID = new SimpleIntegerProperty(this, "journalEntryDetailID");
+    private final SimpleStringProperty journalEntryDetailIDDisplay = new SimpleStringProperty(this, "journalEntryDetailIDDisplay");
     private final SimpleObjectProperty accountGroup = new SimpleObjectProperty(this, "accountGroup");
     private final SimpleStringProperty journalEntryDisplay = new SimpleStringProperty(this, "journalEntryDisplay");
     private final SimpleObjectProperty journalEntryID = new SimpleObjectProperty(this, "journalEntryID");
@@ -88,7 +90,7 @@ public class JournalEntryDetailDA extends DBAccess {
         createSearchColumns();
     }
 
-    public String getJournalEntryDetailID() {
+    public int getJournalEntryDetailID() {
         return journalEntryDetailID.get();
     }
 
@@ -240,20 +242,18 @@ public class JournalEntryDetailDA extends DBAccess {
 
         JournalEntryDetailDA journalEntryDetailDA = (JournalEntryDetailDA) o;
 
-        if (journalEntryDetailDA.getDBEntity() == null || this.getDBEntity() == null) {
-            return false;
-        }
-        return this.getId().equals(journalEntryDetailDA.getId());
+        return this.journalEntryDetail.equals(journalEntryDetailDA.getJournalEntryDetail());
     }
 
     @Override
     public int hashCode() {
-        return journalEntryDetail.getId().hashCode();
+        return journalEntryDetail.hashCode();
     }
 
     private void initialseProprties() {
         this.dBEntity = journalEntryDetail;
         this.journalEntryDetailID.set(journalEntryDetail.getJournalEntryDetailID());
+        this.journalEntryDetailIDDisplay.set(formatInteger(journalEntryDetail.getJournalEntryDetailID()));
         this.accountGroup.set(journalEntryDetail.getAccountGroup());
         this.journalEntry = journalEntryDetail.getJournalEntry();
         if (this.journalEntry != null) {
@@ -287,9 +287,9 @@ public class JournalEntryDetailDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("accountName", "Account Name", this.accountName.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("accountType", "Account Type", this.accountType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("accountAction", "Account Action", this.accountAction.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
-        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(),SearchDataTypes.NUMBER, false));
-        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(),this.unitPriceDisplay.get(),  SearchDataTypes.NUMBER, false));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("quantity", "Quantity", this.quantity.get(), SearchDataTypes.NUMBER, false));
+        this.searchColumns.add(new SearchColumn("unitPrice", "Unit Price", this.unitPrice.get(), this.unitPriceDisplay.get(), SearchDataTypes.NUMBER, false));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("notes", "Notes", this.notes.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("locationID", "Location ID", this.locationID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("locationDisplay", "Location", this.locationDisplay.get(), SearchDataTypes.STRING));
@@ -326,13 +326,18 @@ public class JournalEntryDetailDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.journalEntryDetail);
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.journalEntryDetail);
-
     }
 
     public boolean delete() {
@@ -340,7 +345,7 @@ public class JournalEntryDetailDA extends DBAccess {
 
     }
 
-    public JournalEntryDetail getJournalEntryDetail(String journalEntryDetailID) {
+    public JournalEntryDetail getJournalEntryDetail(int journalEntryDetailID) {
         return (JournalEntryDetail) super.find(JournalEntryDetail.class, journalEntryDetailID);
     }
 
@@ -362,7 +367,7 @@ public class JournalEntryDetailDA extends DBAccess {
         return list;
     }
 
-    public JournalEntryDetailDA get(String journalEntryDetailID) throws Exception {
+    public JournalEntryDetailDA get(int journalEntryDetailID) throws Exception {
         JournalEntryDetail oJournalEntryDetail = getJournalEntryDetail(journalEntryDetailID);
         if (oJournalEntryDetail == null) {
             throw new Exception("No Record with id: " + journalEntryDetailID);
@@ -401,6 +406,19 @@ public class JournalEntryDetailDA extends DBAccess {
 
     public List<JournalEntryDetail> getJournalEntryDetails(String columName, Object value) {
         return super.find(JournalEntryDetail.class, columName, value);
+    }
+
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("accountGroup", journalEntryDetail.getAccountGroup(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("journalEntry", journalEntryDetail.getJournalEntry(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("accountID", journalEntryDetail.getAccountID(), SearchColumn.SearchType.Equal));
+        List<JournalEntryDetail> lJournalEntryDetail = super.find(JournalEntryDetail.class, lSearchColumns);
+        lJournalEntryDetail.removeIf((p) -> p.getId().equals(journalEntryDetail.getId()));
+        if (lJournalEntryDetail.size() > 0) {
+            throw new Exception("The record with Account Group: " + journalEntryDetail.getAccountGroup() + " and Journal Entry: " + journalEntryDetail.getJournalEntry().getDisplayKey() + " and Account ID: " + journalEntryDetail.getAccountID() + "already exists");
+        }
+        return true;
     }
 
     @Override
@@ -466,7 +484,7 @@ public class JournalEntryDetailDA extends DBAccess {
                     toUpdateEntities.add(bankAccount);
 
                     toSaveEntities.add(new BankLedger(this.journalEntryDetail, getAccountID(), bankAccount.getDisplayKey(), postingDate, documentType, description, documentNo, referenceNo, toPostAmount, subsidiaryBalance));
-                    
+
                     break;
                 case Customer:
                     Customer customer = new CustomerDA().getCustomer(getAccountID());
@@ -535,11 +553,11 @@ public class JournalEntryDetailDA extends DBAccess {
 
                 }
             }
-            cAccount.setClosingBalance(balanceValue); 
-                    toUpdateEntities.add(cAccount);
+            cAccount.setClosingBalance(balanceValue);
+            toUpdateEntities.add(cAccount);
             toSaveEntities.add(new GeneralLedger(journalEntryDetail, postingDate, cAccount.getAccountID(), cAccount.getAccountName(), aType, description, toPostAmount, balanceValue));
-           allEnties.add(toSaveEntities);
-           allEnties.add(toUpdateEntities);
+            allEnties.add(toSaveEntities);
+            allEnties.add(toUpdateEntities);
             return allEnties;
         } catch (Exception e) {
             throw e;

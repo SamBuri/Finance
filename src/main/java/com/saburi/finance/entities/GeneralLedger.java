@@ -21,6 +21,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import com.saburi.finance.utils.FinanceEnums.AccountActions;
+import javax.persistence.EnumType;
 
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -43,7 +44,7 @@ public class GeneralLedger extends DBEntity {
     @Size(max = 100, message = "The field: Account Name size cannot be greater than 100")
     @Column(length = 100)
     private String accountName;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private AccountTypes accountType;
     @Size(max = 100, message = "The field: Description size cannot be greater than 100")
     @Column(length = 100)

@@ -104,14 +104,16 @@ call uspEditAccessObject ('AcademicPeriod', 'Academic Period', '0');
 call uspEditAccessObject ('Subject', 'Subject', '0');
 call uspEditIDGenerator('Subject', '0', 2, '', 0, '');
 
-call uspEditAccessObject ('MeasureGroup', 'Measure Gr-oup', '0');
+call uspEditAccessObject ('MeasureGroup', 'Measure Group', '0');
 call uspEditIDGenerator('MeasureGroup', '0', 2, '', 0, '');
+call uspEditAccessObject ('MeasureRelation', 'Measure Relation', '0');
 
 call uspEditAccessObject ('ItemCategory', 'Item Category', '0');
 call uspEditIDGenerator('ItemCategory', '0', 2, '', 0, '');
 call uspEditAccessObject ('ItemTemplate', 'Item Template', '0');
 call uspEditAccessObject ('Item', 'Item', '0');
 call uspEditIDGenerator('Item', '0', 2, '', 0, '');
+call uspEditAccessObject ('ItemPriceGroup', 'Item Price Group', '0');
 
 call uspEditAccessObject ('Client', 'Client', '0');
 call uspEditIDGenerator('Client', '0', 2, '', 0, '');

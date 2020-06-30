@@ -20,6 +20,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import com.saburi.finance.utils.FinanceEnums.AccountActions;
+import javax.persistence.EnumType;
 
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -39,7 +40,7 @@ public class CustomerLedger extends DBEntity {
     @Column(length = 100)
     private String customerName;
     private LocalDate postingDate;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private DocumentTypes documentType;
     @Size(max = 100, message = "The field: Description size cannot be greater than 100")
     @Column(length = 100)

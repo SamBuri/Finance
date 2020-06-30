@@ -18,14 +18,13 @@ import com.saburi.common.dbaccess.OptionsDA;
 import com.saburi.common.entities.DBEntity;
 import com.saburi.common.entities.LookupData;
 import com.saburi.common.utils.CommonEnums;
-import com.saburi.common.utils.CommonEnums.EntryModes;
-import com.saburi.common.utils.CommonEnums.Rights;
 import static com.saburi.common.utils.Utilities.formatInteger;
 import java.time.LocalDate;
 import static com.saburi.common.utils.Utilities.formatDate;
-import com.saburi.finance.utils.FinanceEnums.InvoiceTypes;
 import com.saburi.finance.entities.Customer;
 import static com.saburi.common.utils.Utilities.formatNumber;
+import com.saburi.common.utils.CommonEnums.EntryModes;
+import com.saburi.common.utils.CommonEnums.Rights;
 import static com.saburi.common.utils.Utilities.toWords;
 import com.saburi.finance.entities.ChartAccount;
 import com.saburi.finance.entities.Currency;
@@ -44,6 +43,7 @@ import com.saburi.finance.utils.FinanceEnums.DocumentTypes;
 import com.saburi.finance.utils.FinanceEnums.JournalTypes;
 import com.saburi.finance.utils.FinanceEnums.PostStatus;
 import com.saburi.finance.utils.FinanceOptionKeys;
+import com.saburi.finance.utils.InvoiceSourceNames;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,7 +60,6 @@ public class InvoiceDA extends DBAccess {
     private final SimpleStringProperty invoiceID = new SimpleStringProperty(this, "invoiceID");
     private final SimpleObjectProperty invoiceDate = new SimpleObjectProperty(this, "invoiceDate");
     private final SimpleStringProperty invoiceDateDisplay = new SimpleStringProperty(this, "invoiceDateDisplay");
-    private final SimpleObjectProperty invoiceType = new SimpleObjectProperty(this, "invoiceType");
     private final SimpleStringProperty sellToDisplay = new SimpleStringProperty(this, "sellToDisplay");
     private final SimpleObjectProperty sellToID = new SimpleObjectProperty(this, "sellToID");
     private Customer sellTo;
@@ -76,7 +75,10 @@ public class InvoiceDA extends DBAccess {
     private final SimpleStringProperty amountPaidDisplay = new SimpleStringProperty(this, "amountPaidDisplay");
     private final SimpleDoubleProperty amountRefunded = new SimpleDoubleProperty(this, "amountRefunded");
     private final SimpleStringProperty amountRefundedDisplay = new SimpleStringProperty(this, "amountRefundedDisplay");
+    private final SimpleStringProperty invoiceSource = new SimpleStringProperty(this, "invoiceSource");
+    private final SimpleObjectProperty entryMode = new SimpleObjectProperty(this, "entryMode");
     private List<InvoiceDetails> invoiceDetails = new ArrayList<>();
+    private List<InvoiceDetailsDA> invoiceDetailsDAs = new ArrayList<>();
 
     public InvoiceDA() {
         createSearchColumns();
@@ -99,15 +101,15 @@ public class InvoiceDA extends DBAccess {
         createSearchColumns();
     }
 
-    public InvoiceDA(String invoiceID, LocalDate invoiceDate, InvoiceTypes invoiceType, Customer sellTo, Customer billTo, double amount, String amountWords) {
-        this.invoice = new Invoice(getNextIdHelper(), invoiceID, invoiceDate, invoiceType, sellTo, billTo, amount, amountWords);
+    public InvoiceDA(String invoiceID, LocalDate invoiceDate, Customer sellTo, Customer billTo, double amount, String amountWords, String invoiceSource, EntryModes entryMode) {
+        this.invoice = new Invoice(getNextIdHelper(), invoiceID, invoiceDate, sellTo, billTo, amount, amountWords, invoiceSource, entryMode);
         initialseProprties();
         createSearchColumns();
     }
 
-    public InvoiceDA(String persistenceUnit, String invoiceID, LocalDate invoiceDate, InvoiceTypes invoiceType, Customer sellTo, Customer billTo, double amount, String amountWords) {
+    public InvoiceDA(String persistenceUnit, String invoiceID, LocalDate invoiceDate, Customer sellTo, Customer billTo, double amount, String amountWords, String invoiceSource, EntryModes entryMode) {
         super(persistenceUnit);
-        this.invoice = new Invoice(getNextIdHelper(), invoiceID, invoiceDate, invoiceType, sellTo, billTo, amount, amountWords);
+        this.invoice = new Invoice(getNextIdHelper(), invoiceID, invoiceDate, sellTo, billTo, amount, amountWords, invoiceSource, entryMode);
         initialseProprties();
         createSearchColumns();
     }
@@ -146,15 +148,6 @@ public class InvoiceDA extends DBAccess {
     public void setInvoiceDate(LocalDate invoiceDate) {
         invoice.setInvoiceDate(invoiceDate);
         this.invoiceDate.set(invoiceDate);
-    }
-
-    public Object getInvoiceType() {
-        return invoiceType.get();
-    }
-
-    public void setInvoiceType(InvoiceTypes invoiceType) {
-        invoice.setInvoiceType(invoiceType);
-        this.invoiceType.set(invoiceType);
     }
 
     public Customer getSellTo() {
@@ -268,6 +261,24 @@ public class InvoiceDA extends DBAccess {
         this.amountRefundedDisplay.set(formatNumber(amountRefunded));
     }
 
+    public String getInvoiceSource() {
+        return invoiceSource.get();
+    }
+
+    public void setInvoiceSource(String invoiceSource) {
+        invoice.setInvoiceSource(invoiceSource);
+        this.invoiceSource.set(invoiceSource);
+    }
+
+    public Object getEntryMode() {
+        return entryMode.get();
+    }
+
+    public void setEntryMode(EntryModes entryMode) {
+        invoice.setEntryMode(entryMode);
+        this.entryMode.set(entryMode);
+    }
+
     public List<InvoiceDetails> getInvoiceDetails() {
         return invoiceDetails;
     }
@@ -283,7 +294,14 @@ public class InvoiceDA extends DBAccess {
 
     public void setInvoiceDetailsDAs(List<InvoiceDetailsDA> invoiceDetailsDAs) {
         this.invoice.setInvoiceDetails(InvoiceDetailsDA.getInvoiceDetailsList(invoiceDetailsDAs));
+        this.invoiceDetailsDAs = invoiceDetailsDAs;
 
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+        this.initialseProprties();
+        createSearchColumns();
     }
 
     @Override
@@ -297,15 +315,12 @@ public class InvoiceDA extends DBAccess {
 
         InvoiceDA invoiceDA = (InvoiceDA) o;
 
-        if (invoiceDA.getDBEntity() == null || this.getDBEntity() == null) {
-            return false;
-        }
-        return this.getId().equals(invoiceDA.getId());
+        return this.invoice.equals(invoiceDA.getInvoice());
     }
 
     @Override
     public int hashCode() {
-        return invoice.getId().hashCode();
+        return invoice.hashCode();
     }
 
     private void initialseProprties() {
@@ -315,7 +330,6 @@ public class InvoiceDA extends DBAccess {
         this.invoiceID.set(invoice.getInvoiceID());
         this.invoiceDate.set(invoice.getInvoiceDate());
         this.invoiceDateDisplay.set(formatDate(invoice.getInvoiceDate()));
-        this.invoiceType.set(invoice.getInvoiceType());
         this.sellTo = invoice.getSellTo();
         if (this.sellTo != null) {
             this.sellToID.set(sellTo.getId());
@@ -335,13 +349,14 @@ public class InvoiceDA extends DBAccess {
         this.amountPaidDisplay.set(formatNumber(invoice.getAmountPaid()));
         this.amountRefunded.set(invoice.getAmountRefunded());
         this.amountRefundedDisplay.set(formatNumber(invoice.getAmountRefunded()));
+        this.invoiceSource.set(invoice.getInvoiceSource());
+        this.entryMode.set(invoice.getEntryMode());
         initCommonProprties();
     }
 
     private void createSearchColumns() {
         this.searchColumns.add(new SearchColumn("invoiceID", "Invoice ID", this.invoiceID.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("invoiceDate", "Invoice Date", this.invoiceDate.get(), invoiceDateDisplay.get(), SearchDataTypes.DATE));
-        this.searchColumns.add(new SearchColumn("invoiceType", "Invoice Type", this.invoiceType.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.add(new SearchColumn("sellToID", "Sell To ID", this.sellToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("sellToDisplay", "Sell To", this.sellToDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("billToID", "Bill To ID", this.billToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
@@ -351,6 +366,8 @@ public class InvoiceDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("amountWords", "Amount Words", this.amountWords.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("amountPaid", "Amount Paid", this.amountPaid.get(), amountPaidDisplay.get(), SearchDataTypes.MONEY));
         this.searchColumns.add(new SearchColumn("amountRefunded", "Amount Refunded", this.amountRefunded.get(), amountRefundedDisplay.get(), SearchDataTypes.MONEY));
+        this.searchColumns.add(new SearchColumn("invoiceSource", "Invoice Source", this.invoiceSource.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("entryMode", "Entry Mode", this.entryMode.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 
@@ -384,45 +401,17 @@ public class InvoiceDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
-
-        Map<List<? extends DBEntity>, Rights> map = new HashMap<>();
-        List<Invoice> invoices = new ArrayList<>();
-        List<JournalEntry> journalEntries = new ArrayList<>();
-        JournalEntry journalEntry = this.makeJournalEntries();
-        journalEntries.add(journalEntry);
-        invoices.add(invoice);
-        map.put(invoices, Rights.Create);
-        map.put(journalEntries, Rights.Create);
-
-        if (invoice.getInvoiceType().equals(InvoiceTypes.Ordered)) {
-            List<SaleOrderDetail> saleOrderDetails = new ArrayList<>();
-            List<SaleOrder> saleOrders = new ArrayList<>();
-            invoice.getInvoiceDetails().forEach(inv -> {
-                SaleOrderDetail sODetail = inv.getSaleOrderDetails();
-                sODetail.setInvoiceID(getInvoiceID());
-                sODetail.setInvoiceStatus(FinanceEnums.InvoiceStatus.Invoiced);
-                saleOrderDetails.add(sODetail);
-                SaleOrder saleOrder = sODetail.getSaleOrder();
-                if (!saleOrders.contains(saleOrder)) {
-                    saleOrder.setStatus(CommonEnums.OpenStatus.Closed);
-                    saleOrders.add(saleOrder);
-                }
-            });
-
-            map.put(saleOrders, Rights.Update);
-            map.put(saleOrderDetails, Rights.Update);
+        if (!isValid()) {
+            return false;
         }
-        
-        if (OptionsDA.getBooleanOptionValue(FinanceOptionKeys.ENABLE_AUTO_GENERAL_LEDGER_POSTING)) {
-            map.putAll(new JournalEntryDA(journalEntry).getPostMap());
-        }
-        super.processBatchList(map);
-        
-        return true;
+        return saveData();
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.invoice);
 
     }
@@ -503,6 +492,10 @@ public class InvoiceDA extends DBAccess {
         return super.find(Invoice.class, columName, value);
     }
 
+    public boolean isValid() throws Exception {
+        return true;
+    }
+
     @Override
     public List<DBAccess> getRevisions() {
         try {
@@ -527,25 +520,6 @@ public class InvoiceDA extends DBAccess {
             if (entityManager == null) {
                 entityManager.close();
             }
-        }
-
-    }
-
-    public List<Invoice> getDueInvoices(Customer client) {
-        try {
-            entityManager = entityManagerFactory.createEntityManager();
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Invoice> criteriaQuery = criteriaBuilder.createQuery(Invoice.class);
-            Root<Invoice> root = criteriaQuery.from(Invoice.class);
-            criteriaQuery.where(criteriaBuilder.greaterThan(root.get("amount"), root.get("amountPaid")),
-                    criteriaBuilder.equal(root.get("billTo"), client));
-            criteriaQuery.orderBy(criteriaBuilder.asc(root.get("recordDateTime")));
-            TypedQuery<Invoice> typedQuery = entityManager.createQuery(criteriaQuery);
-            return typedQuery.getResultList();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            entityManager.close();
         }
 
     }
@@ -604,6 +578,68 @@ public class InvoiceDA extends DBAccess {
 
         journalEntry.setJournalEntryDetails(journalEntryDetails);
         return journalEntry;
+    }
+
+    public boolean saveData() throws Exception {
+        SaleOrderDetailDA saleOrderDetailDA = new SaleOrderDetailDA();
+        Map<List<? extends DBEntity>, Rights> map = new HashMap<>();
+        List<Invoice> invoices = new ArrayList<>();
+        List<JournalEntry> journalEntries = new ArrayList<>();
+        JournalEntry journalEntry = this.makeJournalEntries();
+        journalEntries.add(journalEntry);
+        invoices.add(invoice);
+        map.put(invoices, Rights.Create);
+        map.put(journalEntries, Rights.Create);
+
+        if (invoice.getInvoiceSource().equalsIgnoreCase(InvoiceSourceNames.SALES_ORDER)) {
+            List<SaleOrderDetail> saleOrderDetails = new ArrayList<>();
+            List<SaleOrder> saleOrders = new ArrayList<>();
+            invoice.getInvoiceDetails().forEach(inv -> {
+                SaleOrderDetail sODetail = saleOrderDetailDA.getSaleOrderDetail(inv.getInvoiceSourceID(), inv.getItem());
+                sODetail.setInvoiceID(getInvoiceID());
+                sODetail.setInvoiceStatus(FinanceEnums.InvoiceStatus.Invoiced);
+                saleOrderDetails.add(sODetail);
+                SaleOrder saleOrder = sODetail.getSaleOrder();
+                if (!saleOrders.contains(saleOrder)) {
+                    saleOrder.setStatus(CommonEnums.OpenStatus.Closed);
+                    saleOrders.add(saleOrder);
+                }
+            });
+
+            map.put(saleOrders, Rights.Update);
+            map.put(saleOrderDetails, Rights.Update);
+        }
+
+        super.processBatchList(map);
+        if (OptionsDA.getBooleanOptionValue(FinanceOptionKeys.ENABLE_AUTO_GENERAL_LEDGER_POSTING)) {
+            new JournalEntryDA(journalEntry).post();
+        }
+
+        return true;
+
+    }
+
+    public List<Invoice> getDueInvoices(Customer customer) {
+        try {
+            entityManager = entityManagerFactory.createEntityManager();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Invoice> criteriaQuery = criteriaBuilder.createQuery(Invoice.class);
+            Root<Invoice> root = criteriaQuery.from(Invoice.class);
+            criteriaQuery.where(criteriaBuilder.greaterThan(root.get("amount"), root.get("amountPaid")),
+                    criteriaBuilder.equal(root.get("billTo"), customer));
+            criteriaQuery.orderBy(criteriaBuilder.asc(root.get("recordDateTime")));
+            TypedQuery<Invoice> typedQuery = entityManager.createQuery(criteriaQuery);
+            return typedQuery.getResultList();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            entityManager.close();
+        }
+
+    }
+
+    public List<InvoiceDetailsDA> getInvoiceDetailsDA() {
+        return this.invoiceDetailsDAs;
     }
 
 }

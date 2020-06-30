@@ -21,23 +21,22 @@ import static com.saburi.common.utils.Utilities.formatNumber;
 public class ReceiptInvoiceDA extends DBAccess {
 
     private ReceiptInvoice receiptInvoice = new ReceiptInvoice();
+    private final SimpleIntegerProperty receiptInvoiceID = new SimpleIntegerProperty(this, "receiptInvoiceID");
+    private final SimpleStringProperty receiptInvoiceIDDisplay = new SimpleStringProperty(this, "receiptInvoiceIDDisplay");
     private final SimpleStringProperty receiptDisplay = new SimpleStringProperty(this, "receiptDisplay");
     private final SimpleObjectProperty receiptID = new SimpleObjectProperty(this, "receiptID");
     private Receipt receipt;
     private final SimpleStringProperty invoiceDisplay = new SimpleStringProperty(this, "invoiceDisplay");
     private final SimpleObjectProperty invoiceID = new SimpleObjectProperty(this, "invoiceID");
     private Invoice invoice;
-    private final SimpleStringProperty receiptInvoiceID = new SimpleStringProperty(this, "receiptInvoiceID");
-    private final SimpleObjectProperty invoiceType = new SimpleObjectProperty(this, "invoiceType");
     private final SimpleDoubleProperty invoiceAmount = new SimpleDoubleProperty(this, "invoiceAmount");
     private final SimpleStringProperty invoiceAmountDisplay = new SimpleStringProperty(this, "invoiceAmountDisplay");
     private final SimpleDoubleProperty amount = new SimpleDoubleProperty(this, "amount");
     private final SimpleStringProperty amountDisplay = new SimpleStringProperty(this, "amountDisplay");
-      private final SimpleDoubleProperty amountRefunded = new SimpleDoubleProperty(this, "amountRefunded");
+    private final SimpleDoubleProperty amountRefunded = new SimpleDoubleProperty(this, "amountRefunded");
     private final SimpleStringProperty amountRefundedDisplay = new SimpleStringProperty(this, "amountRefundedDisplay");
     private final SimpleDoubleProperty netPaid = new SimpleDoubleProperty(this, "netPaid");
     private final SimpleStringProperty netPaidDisplay = new SimpleStringProperty(this, "netPaidDisplay");
-   
 
     public ReceiptInvoiceDA() {
         createSearchColumns();
@@ -60,15 +59,15 @@ public class ReceiptInvoiceDA extends DBAccess {
         createSearchColumns();
     }
 
-    public ReceiptInvoiceDA(ReceiptDA receiptDA, InvoiceDA invoiceDA, String receiptInvoiceID, double amount) {
-        this.receiptInvoice = new ReceiptInvoice(receiptDA != null ? (Receipt) receiptDA.getDBEntity() : null, invoiceDA != null ? (Invoice) invoiceDA.getDBEntity() : null, receiptInvoiceID, amount);
+    public ReceiptInvoiceDA(Receipt receipt, Invoice invoice, double amount, double amountRefunded) {
+        this.receiptInvoice = new ReceiptInvoice(receipt, invoice, amount, amountRefunded);
         initialseProprties();
         createSearchColumns();
     }
 
-    public ReceiptInvoiceDA(String persistenceUnit, ReceiptDA receiptDA, InvoiceDA invoiceDA, String receiptInvoiceID, double amount) {
+    public ReceiptInvoiceDA(String persistenceUnit, Receipt receipt, Invoice invoice, double amount, double amountRefunded) {
         super(persistenceUnit);
-        this.receiptInvoice = new ReceiptInvoice(receiptDA != null ? (Receipt) receiptDA.getDBEntity() : null, invoiceDA != null ? (Invoice) invoiceDA.getDBEntity() : null, receiptInvoiceID, amount);
+        this.receiptInvoice = new ReceiptInvoice(receipt, invoice, amount, amountRefunded);
         initialseProprties();
         createSearchColumns();
     }
@@ -138,17 +137,12 @@ public class ReceiptInvoiceDA extends DBAccess {
         receiptInvoice.setInvoice(invoice);
         this.invoice = invoice;
         this.invoiceID.set(invoice.getInvoiceID());
-        this.invoiceType.set(invoice.getInvoiceType());
         this.invoiceDisplay.set(invoice.getDisplayKey());
-        this.setInvoiceAmount(invoice.getAmount()+invoice.getAmountRefunded()-invoice.getAmountPaid());
+        this.setInvoiceAmount(invoice.getAmount() + invoice.getAmountRefunded() - invoice.getAmountPaid());
     }
 
-    public String getReceiptInvoiceID() {
+    public int getReceiptInvoiceID() {
         return receiptInvoiceID.get();
-    }
-
-    public Object getInvoiceType() {
-        return invoiceType.get();
     }
 
     public double getInvoiceAmount() {
@@ -189,15 +183,12 @@ public class ReceiptInvoiceDA extends DBAccess {
 
         ReceiptInvoiceDA receiptInvoiceDA = (ReceiptInvoiceDA) o;
 
-        if (receiptInvoiceDA.getDBEntity() == null || this.getDBEntity() == null) {
-            return false;
-        }
-        return this.getId().equals(receiptInvoiceDA.getId());
+        return this.receiptInvoice.equals(receiptInvoiceDA.getReceiptInvoice());
     }
 
     @Override
     public int hashCode() {
-        return receiptInvoice.getId().hashCode();
+        return receiptInvoice.hashCode();
     }
 
     private void initialseProprties() {
@@ -211,9 +202,8 @@ public class ReceiptInvoiceDA extends DBAccess {
         if (this.invoice != null) {
             this.invoiceID.set(invoice.getId());
             this.invoiceDisplay.set(invoice.getDisplayKey());
-            this.invoiceAmount.set(invoice.getAmount()-(invoice.getAmountPaid()-invoice.getAmountRefunded()));
+            this.invoiceAmount.set(invoice.getAmount() - (invoice.getAmountPaid() - invoice.getAmountRefunded()));
             this.invoiceAmountDisplay.set(formatNumber(invoiceAmount.get()));
-            this.invoiceType.set(invoice.getInvoiceType());
 
         }
         this.receiptInvoiceID.set(receiptInvoice.getReceiptInvoiceID());
@@ -221,21 +211,19 @@ public class ReceiptInvoiceDA extends DBAccess {
         this.amountDisplay.set(formatNumber(amount.get()));
         this.amountRefunded.set(receiptInvoice.getAmountRefunded());
         this.amountRefundedDisplay.set(formatNumber(amountRefunded.get()));
-        this.netPaid.set(amount.get()-amountRefunded.get());
+        this.netPaid.set(amount.get() - amountRefunded.get());
         this.netPaidDisplay.set(formatNumber(netPaid.get()));
         initCommonProprties();
     }
 
     private void createSearchColumns() {
-        this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
+        this.searchColumns.add(new SearchColumn("receiptInvoiceID", "ReceiptInvoiceID", this.receiptInvoiceID.get(), receiptInvoiceIDDisplay.get(), SearchDataTypes.INTEGER, false));
         this.searchColumns.add(new SearchColumn("receiptDisplay", "Receipt", this.receiptDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("invoiceID", "Invoice ID", this.invoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("receiptInvoiceID", "ReceiptInvoiceID", this.receiptInvoiceID.get(), SearchDataTypes.STRING, false));
-        this.searchColumns.add(new SearchColumn("invoiceType", "Invoice Type", this.invoiceType.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("amountRefunded", "Amount Refunded", this.amountRefunded.get(), amountRefundedDisplay.get(), SearchDataTypes.NUMBER));
-        this.searchColumns.add(new SearchColumn("netPaid", "Net Paid", this.netPaid.get(),netPaidDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("netPaid", "Net Paid", this.netPaid.get(), netPaidDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 
@@ -269,13 +257,18 @@ public class ReceiptInvoiceDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.receiptInvoice);
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.receiptInvoice);
-
     }
 
     public boolean delete() {
@@ -283,7 +276,7 @@ public class ReceiptInvoiceDA extends DBAccess {
 
     }
 
-    public ReceiptInvoice getReceiptInvoice(String receiptInvoiceID) {
+    public ReceiptInvoice getReceiptInvoice(int receiptInvoiceID) {
         return (ReceiptInvoice) super.find(ReceiptInvoice.class, receiptInvoiceID);
     }
 
@@ -305,7 +298,7 @@ public class ReceiptInvoiceDA extends DBAccess {
         return list;
     }
 
-    public ReceiptInvoiceDA get(String receiptInvoiceID) throws Exception {
+    public ReceiptInvoiceDA get(int receiptInvoiceID) throws Exception {
         ReceiptInvoice oReceiptInvoice = getReceiptInvoice(receiptInvoiceID);
         if (oReceiptInvoice == null) {
             throw new Exception("No Record with id: " + receiptInvoiceID);
@@ -346,6 +339,18 @@ public class ReceiptInvoiceDA extends DBAccess {
         return super.find(ReceiptInvoice.class, columName, value);
     }
 
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("receipt", receiptInvoice.getReceipt(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("invoice", receiptInvoice.getInvoice(), SearchColumn.SearchType.Equal));
+        List<ReceiptInvoice> lReceiptInvoice = super.find(ReceiptInvoice.class, lSearchColumns);
+        lReceiptInvoice.removeIf((p) -> p.getId().equals(receiptInvoice.getId()));
+        if (lReceiptInvoice.size() > 0) {
+            throw new Exception("The record with Receipt: " + receiptInvoice.getReceipt().getDisplayKey() + " and Invoice: " + receiptInvoice.getInvoice().getDisplayKey() + "already exists");
+        }
+        return true;
+    }
+
     @Override
     public List<DBAccess> getRevisions() {
         try {
@@ -377,9 +382,9 @@ public class ReceiptInvoiceDA extends DBAccess {
     public List<ReceiptInvoice> getReceiptInvoices(Invoice invoice) {
         return getReceiptInvoices("invoice", invoice);
     }
-    
-    public double getAmountPaid(Invoice invoice){
-      return this.getSum(ReceiptInvoice.class,"amount", "invoice", invoice);
+
+    public double getAmountPaid(Invoice invoice) {
+        return this.getSum(ReceiptInvoice.class, "amount", "invoice", invoice);
     }
 
 }

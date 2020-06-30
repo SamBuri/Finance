@@ -9,6 +9,7 @@ import com.saburi.common.dbaccess.LookupDataDA;
 import com.saburi.common.entities.LookupData;
 import com.saburi.common.utils.EditCell;
 import static com.saburi.common.utils.FXUIUtils.addRow;
+import static com.saburi.common.utils.FXUIUtils.addRowOnce;
 import static com.saburi.common.utils.FXUIUtils.errorMessage;
 import static com.saburi.common.utils.FXUIUtils.getEntity;
 import static com.saburi.common.utils.FXUIUtils.getSelectedLookupData;
@@ -41,7 +42,6 @@ import javafx.application.Platform;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import com.saburi.finance.utils.FinanceEnums;
 import com.saburi.finance.utils.FinanceEnums.UnitMeasureUsages;
-import com.saburi.finance.utils.FinanceNavigate;
 
 public class MeasureGroupController extends EditController {
 
@@ -181,7 +181,7 @@ public class MeasureGroupController extends EditController {
                     .get(event.getTablePosition().getRow()))
                     .setUnitMeasure(unitMeasure);
             tblMeasureRelations.refresh();
-            addRow(tblMeasureRelations, new MeasureRelationDA());
+            addRowOnce(tblMeasureRelations, new MeasureRelationDA());
         });
     }
 
@@ -195,7 +195,7 @@ public class MeasureGroupController extends EditController {
                         .get(event.getTablePosition().getRow()))
                         .setBaseSize(value);
                 tblMeasureRelations.refresh();
-                addRow(tblMeasureRelations, new MeasureRelationDA());
+                addRowOnce(tblMeasureRelations, new MeasureRelationDA());
             } catch (Exception e) {
                 Platform.runLater(() -> errorMessage(e));
             }
@@ -211,7 +211,7 @@ public class MeasureGroupController extends EditController {
                     .get(event.getTablePosition().getRow()))
                     .setDefaultUsage(value);
             tblMeasureRelations.refresh();
-            addRow(tblMeasureRelations, new MeasureRelationDA());
+            addRowOnce(tblMeasureRelations, new MeasureRelationDA());
         });
     }
 

@@ -16,7 +16,6 @@ import com.saburi.common.utils.SearchColumn.SearchDataTypes;
 import org.hibernate.envers.RevisionType;
 import com.saburi.finance.entities.Invoice;
 import com.saburi.finance.entities.Item;
-import com.saburi.finance.entities.SaleOrderDetail;
 import com.saburi.finance.entities.Customer;
 import static com.saburi.common.utils.Utilities.formatNumber;
 import com.saburi.common.entities.LookupData;
@@ -25,23 +24,20 @@ import java.time.LocalDate;
 import java.util.Optional;
 import com.saburi.finance.utils.FinanceEnums;
 import static com.saburi.common.utils.Utilities.formatInteger;
+import com.saburi.finance.entities.SaleOrderDetail;
 
 public class InvoiceDetailsDA extends DBAccess {
 
     private InvoiceDetails invoiceDetails = new InvoiceDetails();
+    private final SimpleIntegerProperty invoiceDetailID = new SimpleIntegerProperty(this, "invoiceDetailID");
+    private final SimpleStringProperty invoiceDetailIDDisplay = new SimpleStringProperty(this, "invoiceDetailIDDisplay");
     private final SimpleStringProperty invoiceDisplay = new SimpleStringProperty(this, "invoiceDisplay");
     private final SimpleObjectProperty invoiceID = new SimpleObjectProperty(this, "invoiceID");
     private Invoice invoice;
     private final SimpleStringProperty itemDisplay = new SimpleStringProperty(this, "itemDisplay");
     private final SimpleObjectProperty itemID = new SimpleObjectProperty(this, "itemID");
     private Item item;
-    private final SimpleStringProperty invoiceDetailID = new SimpleStringProperty(this, "invoiceDetailID");
-    private final SimpleStringProperty saleOrderDetailsDisplay = new SimpleStringProperty(this, "saleOrderDetailsDisplay");
-    private final SimpleObjectProperty saleOrderDetailsID = new SimpleObjectProperty(this, "saleOrderDetailsID");
-    private SaleOrderDetail saleOrderDetails;
-    private final SimpleStringProperty sellToDisplay = new SimpleStringProperty(this, "sellToDisplay");
-    private final SimpleObjectProperty sellToID = new SimpleObjectProperty(this, "sellToID");
-    private Customer sellTo;
+    private final SimpleStringProperty invoiceSourceID = new SimpleStringProperty(this, "invoiceSourceID");
     private final SimpleIntegerProperty baseQuantity = new SimpleIntegerProperty(this, "baseQuantity");
     private final SimpleStringProperty baseQuantityDisplay = new SimpleStringProperty(this, "baseQuantityDisplay");
     private final SimpleStringProperty unitMeasure = new SimpleStringProperty(this, "unitMeasure");
@@ -64,13 +60,17 @@ public class InvoiceDetailsDA extends DBAccess {
     private LookupData location;
 
     //Invoices
-    private final SimpleObjectProperty invoiceDate = new SimpleObjectProperty(this, "invoiceDate");
-    private final SimpleStringProperty invoiceDateDisplay = new SimpleStringProperty(this, "invoiceDateDisplay");
-    private final SimpleObjectProperty invoiceType = new SimpleObjectProperty(this, "invoiceType");
+    private final SimpleStringProperty sellToDisplay = new SimpleStringProperty(this, "sellToDisplay");
+    private final SimpleObjectProperty sellToID = new SimpleObjectProperty(this, "sellToID");
+    private Customer sellTo;
     private final SimpleStringProperty billToDisplay = new SimpleStringProperty(this, "billToDisplay");
     private final SimpleObjectProperty billToID = new SimpleObjectProperty(this, "billToID");
     private Customer billTo;
-
+    private final SimpleObjectProperty invoiceDate = new SimpleObjectProperty(this, "invoiceDate");
+    private final SimpleStringProperty invoiceDateDisplay = new SimpleStringProperty(this, "invoiceDateDisplay");
+    private final SimpleStringProperty invoiceSource = new SimpleStringProperty(this, "invoiceSource");
+    private final SimpleObjectProperty entryMode = new SimpleObjectProperty(this, "entryMode");
+    
     public InvoiceDetailsDA() {
         createSearchColumns();
     }
@@ -92,15 +92,15 @@ public class InvoiceDetailsDA extends DBAccess {
         createSearchColumns();
     }
 
-    public InvoiceDetailsDA(Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
-        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
+    public InvoiceDetailsDA(int invoiceDetailID, Invoice invoice, Item item, String invoiceSourceID, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, int originalQuantity, double originalAmount, LookupData location) {
+        this.invoiceDetails = new InvoiceDetails(invoiceDetailID, invoice, item, invoiceSourceID, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, originalQuantity, originalAmount, location);
         initialseProprties();
         createSearchColumns();
     }
 
-    public InvoiceDetailsDA(String persistenceUnit, Invoice invoice, Item item, SaleOrderDetail saleOrderDetails, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, LookupData location) {
+    public InvoiceDetailsDA(String persistenceUnit, int invoiceDetailID, Invoice invoice, Item item, String invoiceSourceID, int baseQuantity, String unitMeasure, int measureSize, int quantity, double unitPrice, double discount, double amount, int originalQuantity, double originalAmount, LookupData location) {
         super(persistenceUnit);
-        this.invoiceDetails = new InvoiceDetails(invoice, item, saleOrderDetails, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, location);
+        this.invoiceDetails = new InvoiceDetails(invoiceDetailID, invoice, item, invoiceSourceID, baseQuantity, unitMeasure, measureSize, quantity, unitPrice, discount, amount, originalQuantity, originalAmount, location);
         initialseProprties();
         createSearchColumns();
     }
@@ -166,37 +166,27 @@ public class InvoiceDetailsDA extends DBAccess {
         this.setBaseQuantity(1);
     }
 
-    public String getInvoiceDetailID() {
+    public int getInvoiceDetailID() {
         return invoiceDetailID.get();
     }
 
-    public SaleOrderDetail getSaleOrderDetails() {
-        return saleOrderDetails;
+    public String getInvoiceDetailIDDisplay() {
+        return invoiceDetailIDDisplay.get();
     }
 
-    public Object getSaleOrderDetailsID() {
-        return saleOrderDetailsID.get();
+    public void setInvoiceDetailID(int invoiceDetailID) {
+        invoiceDetails.setInvoiceDetailID(invoiceDetailID);
+        this.invoiceDetailID.set(invoiceDetailID);
+        this.invoiceDetailIDDisplay.set(formatInteger(invoiceDetailID));
     }
 
-    public String getSaleOrderDetailsDisplay() {
-        return saleOrderDetailsDisplay.get();
+    public String getInvoiceSourceID() {
+        return invoiceSourceID.get();
     }
 
-    public SaleOrderDetailDA getSaleOrderDetailsDA() {
-        return this.saleOrderDetails != null ? new SaleOrderDetailDA(this.saleOrderDetails) : null;
-    }
-
-    public void setSaleOrderDetails(SaleOrderDetail saleOrderDetails) {
-        invoiceDetails.setSaleOrderDetails(saleOrderDetails);
-        this.saleOrderDetails = saleOrderDetails;
-        this.saleOrderDetailsID.set(saleOrderDetails.getId());
-        this.saleOrderDetailsDisplay.set(saleOrderDetails.getDisplayKey());
-        this.setItem(saleOrderDetails.getItem());
-        this.setBaseQuantity(saleOrderDetails.getBaseQuantity());
-        this.setMeasureSize(saleOrderDetails.getMeasureSize());
-        this.setUnitMeasure(saleOrderDetails.getUnitMeasure());
-        this.setUnitPrice(saleOrderDetails.getUnitPrice());
-        this.setDiscount(saleOrderDetails.getDiscount());
+    public void setInvoiceSourceID(String invoiceSourceID) {
+        invoiceDetails.setInvoiceSourceID(invoiceSourceID);
+        this.invoiceSourceID.set(invoiceSourceID);
     }
 
     public Customer getSellTo() {
@@ -367,15 +357,6 @@ public class InvoiceDetailsDA extends DBAccess {
         this.invoiceDate.set(invoiceDate);
     }
 
-    public Object getInvoiceType() {
-        return invoiceType.get();
-    }
-
-    public void setInvoiceType(FinanceEnums.InvoiceTypes invoiceType) {
-        invoice.setInvoiceType(invoiceType);
-        this.invoiceType.set(invoiceType);
-    }
-
     public Customer getBillTo() {
         return billTo;
     }
@@ -408,15 +389,12 @@ public class InvoiceDetailsDA extends DBAccess {
 
         InvoiceDetailsDA invoiceDetailsDA = (InvoiceDetailsDA) o;
 
-        if (invoiceDetailsDA.getDBEntity() == null || this.getDBEntity() == null) {
-            return false;
-        }
-        return this.getId().equals(invoiceDetailsDA.getId());
+        return this.invoiceDetails.equals(invoiceDetailsDA.getInvoiceDetails());
     }
 
     @Override
     public int hashCode() {
-        return invoiceDetails.getId().hashCode();
+        return invoiceDetails.hashCode();
     }
 
     private void initialseProprties() {
@@ -430,6 +408,13 @@ public class InvoiceDetailsDA extends DBAccess {
                 this.sellToID.set(sellTo.getId());
                 this.sellToDisplay.set(sellTo.getDisplayKey());
             }
+            this.billTo = invoice.getBillTo();
+            if (this.billTo != null) {
+                this.billToID.set(billTo.getId());
+                this.billToDisplay.set(billTo.getDisplayKey());
+            }
+            this.invoiceSource.set(invoice.getInvoiceSource());
+            this.entryMode.set(invoice.getEntryMode());
         }
         this.item = invoiceDetails.getItem();
         if (this.item != null) {
@@ -437,11 +422,7 @@ public class InvoiceDetailsDA extends DBAccess {
             this.itemDisplay.set(item.getDisplayKey());
         }
         this.invoiceDetailID.set(invoiceDetails.getInvoiceDetailID());
-        this.saleOrderDetails = invoiceDetails.getSaleOrderDetails();
-        if (this.saleOrderDetails != null) {
-            this.saleOrderDetailsID.set(saleOrderDetails.getId());
-            this.saleOrderDetailsDisplay.set(saleOrderDetails.getDisplayKey());
-        }
+        this.invoiceSourceID.set(invoiceDetails.getInvoiceSourceID());
 
         this.baseQuantity.set(invoiceDetails.getBaseQuantity());
         this.baseQuantityDisplay.set(formatInteger(invoiceDetails.getBaseQuantity()));
@@ -469,15 +450,15 @@ public class InvoiceDetailsDA extends DBAccess {
     }
 
     private void createSearchColumns() {
+        this.searchColumns.add(new SearchColumn("invoiceDetailID", "Invoice Detail ID", this.invoiceDetailID.get(), invoiceDetailIDDisplay.get(), SearchDataTypes.INTEGER));
         this.searchColumns.add(new SearchColumn("invoiceID", "Invoice ID", this.invoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("invoiceDisplay", "Invoice", this.invoiceDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("itemID", "Item ID", this.itemID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("itemDisplay", "Item", this.itemDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("invoiceDetailID", "InvoiceDetailID", this.invoiceDetailID.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("saleOrderDetailsID", "Sale Order Detail ID", this.saleOrderDetailsID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
-        this.searchColumns.add(new SearchColumn("saleOrderDetailsDisplay", "Sale Order Detail", this.saleOrderDetailsDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("sellToID", "Sell To ID", this.sellToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("sellToDisplay", "Sell To", this.sellToDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("billToID", "Bill To ID", this.billToID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
+        this.searchColumns.add(new SearchColumn("billToDisplay", "Bill To", this.billToDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("baseQuantity", "Base Quantity", this.baseQuantity.get(), baseQuantityDisplay.get(), SearchDataTypes.INTEGER));
         this.searchColumns.add(new SearchColumn("unitMeasure", "Unit Measure", this.unitMeasure.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), measureSizeDisplay.get(), SearchDataTypes.INTEGER));
@@ -489,6 +470,9 @@ public class InvoiceDetailsDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("originalAmount", "Original Amount", this.originalAmount.get(), originalAmountDisplay.get(), SearchDataTypes.MONEY));
         this.searchColumns.add(new SearchColumn("locationID", "Location ID", this.locationID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("locationDisplay", "Location", this.locationDisplay.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("invoiceSource", "Invoice Source", this.invoiceSource.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("invoiceSourceID", "Invoice Source ID", this.invoiceSourceID.get(), SearchDataTypes.STRING));
+        this.searchColumns.add(new SearchColumn("entryMode", "Entry Mode", this.entryMode.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal));
         this.searchColumns.addAll(this.getDefaultSearchColumns());
     }
 
@@ -522,11 +506,17 @@ public class InvoiceDetailsDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.invoiceDetails);
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.invoiceDetails);
 
     }
@@ -536,8 +526,9 @@ public class InvoiceDetailsDA extends DBAccess {
 
     }
 
-    public InvoiceDetails getInvoiceDetails(String invoiceDetailID) {
-        return (InvoiceDetails) super.find(InvoiceDetails.class, invoiceDetailID);
+    public InvoiceDetails getInvoiceDetails(int invoiceDetailID) {
+        return (InvoiceDetails) super.find(InvoiceDetails.class,
+                invoiceDetailID);
     }
 
     public InvoiceDetails getInvoiceDetails() {
@@ -545,20 +536,22 @@ public class InvoiceDetailsDA extends DBAccess {
     }
 
     public List<InvoiceDetails> getInvoiceDetailss() {
-        return super.find(InvoiceDetails.class);
+        return super.find(InvoiceDetails.class
+        );
     }
 
     @Override
     public List<DBAccess> get() {
         List<DBAccess> list = new ArrayList<>();
-        selectQuery(InvoiceDetails.class).forEach(o -> list.add(new InvoiceDetailsDA((InvoiceDetails) o)));
+        selectQuery(InvoiceDetails.class
+        ).forEach(o -> list.add(new InvoiceDetailsDA((InvoiceDetails) o)));
         if (entityManager != null) {
             entityManager.close();
         }
         return list;
     }
 
-    public InvoiceDetailsDA get(String invoiceDetailID) throws Exception {
+    public InvoiceDetailsDA get(int invoiceDetailID) throws Exception {
         InvoiceDetails oInvoiceDetails = getInvoiceDetails(invoiceDetailID);
         if (oInvoiceDetails == null) {
             throw new Exception("No Record with id: " + invoiceDetailID);
@@ -568,7 +561,8 @@ public class InvoiceDetailsDA extends DBAccess {
 
     public List<InvoiceDetailsDA> get(String columName, Object value) {
         List<InvoiceDetailsDA> list = new ArrayList<>();
-        super.selectQuery(InvoiceDetails.class, columName, value).forEach(da -> list.add(new InvoiceDetailsDA((InvoiceDetails) da)));
+        super.selectQuery(InvoiceDetails.class,
+                columName, value).forEach(da -> list.add(new InvoiceDetailsDA((InvoiceDetails) da)));
         if (entityManager != null) {
             entityManager.close();
         }
@@ -588,30 +582,49 @@ public class InvoiceDetailsDA extends DBAccess {
     }
 
     public int getMax(String columnName) {
-        return super.getMax(InvoiceDetails.class, columnName);
+        return super.getMax(InvoiceDetails.class,
+                columnName);
     }
 
     public int getMax(String columnName, String comparatorColumn, Object comparatorVaue) {
-        return super.getMax(InvoiceDetails.class, columnName, comparatorColumn, comparatorVaue);
+        return super.getMax(InvoiceDetails.class,
+                columnName, comparatorColumn, comparatorVaue);
     }
 
     public List<InvoiceDetails> getInvoiceDetailss(String columName, Object value) {
-        return super.find(InvoiceDetails.class, columName, value);
+        return super.find(InvoiceDetails.class,
+                columName, value);
     }
 
     public List<InvoiceDetails> getInvoiceDetailsByInvoice(Invoice invoice) {
-        return super.find(InvoiceDetails.class, "invoice", invoice);
+        return super.find(InvoiceDetails.class,
+                "invoice", invoice);
     }
 
     public List<InvoiceDetailsDA> getInvoiceDetailsDAByInvoice(Invoice invoice) {
         return toDaList(getInvoiceDetailsByInvoice(invoice));
     }
 
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("invoice", invoiceDetails.getInvoice(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("item", invoiceDetails.getItem(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("invoiceSourceID", invoiceDetails.getInvoiceSourceID(), SearchColumn.SearchType.Equal));
+        List<InvoiceDetails> lInvoiceDetails = super.find(InvoiceDetails.class,
+                lSearchColumns);
+        lInvoiceDetails.removeIf((p) -> p.getId().equals(invoiceDetails.getId()));
+        if (lInvoiceDetails.size() > 0) {
+            throw new Exception("The record with Invoice: " + invoiceDetails.getInvoice().getDisplayKey() + " and Item: " + invoiceDetails.getItem().getDisplayKey() + " and Invoice Source ID: " + invoiceDetails.getInvoiceSourceID() + "already exists");
+        }
+        return true;
+    }
+
     @Override
     public List<DBAccess> getRevisions() {
         try {
 
-            List<Object[]> list = getEntityRevisions(InvoiceDetails.class);
+            List<Object[]> list = getEntityRevisions(InvoiceDetails.class
+            );
             List<DBAccess> dBAccesses = new ArrayList<>();
             list.forEach(e -> {
 
@@ -633,6 +646,16 @@ public class InvoiceDetailsDA extends DBAccess {
             }
         }
 
+    }
+
+    public void setSaleOrderDetail(SaleOrderDetail saleOrderDetail) {
+        this.setItem(saleOrderDetail.getItem());
+        this.setBaseQuantity(saleOrderDetail.getBaseQuantity());
+        this.setUnitMeasure(saleOrderDetail.getUnitMeasure());
+        this.setMeasureSize(saleOrderDetail.getMeasureSize());
+        this.setUnitPrice(saleOrderDetail.getUnitPrice());
+        this.setDiscount(saleOrderDetail.getDiscount());
+        this.setInvoiceSourceID(saleOrderDetail.getSaleOrder().getSaleOrderID());
     }
 
 }

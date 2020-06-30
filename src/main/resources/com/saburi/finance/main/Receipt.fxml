@@ -89,11 +89,6 @@
                         <PropertyValueFactory property="InvoiceID" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn id="Receipt" fx:id="tbcReceiptInvoiceInvoiceType" text="Invoice Type" editable="true">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="InvoiceType" />
-                    </cellValueFactory>
-                </TableColumn>
                 <TableColumn id="Receipt" fx:id="tbcReceiptInvoiceInvoiceAmount" text="Invoice Amount" editable="true">
                     <cellValueFactory>
                         <PropertyValueFactory property="InvoiceAmountDisplay" />

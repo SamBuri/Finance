@@ -26,7 +26,6 @@ import com.saburi.common.utils.NumberToWord;
 import com.saburi.common.utils.Utilities.FormMode;
 import static com.saburi.common.utils.Utilities.defortNumberOptional;
 import static com.saburi.common.utils.Utilities.formatNumber;
-import static com.saburi.common.utils.Utilities.getInt;
 import com.saburi.finance.dbaccess.CustomerDA;
 import com.saburi.finance.dbaccess.ItemDA;
 import com.saburi.finance.dbaccess.MeasureGroupDA;
@@ -57,6 +56,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import static com.saburi.common.utils.Utilities.getInteger;
 
 public class SaleOrderController extends EditController {
 
@@ -98,8 +98,8 @@ public class SaleOrderController extends EditController {
     private TableColumn<SaleOrderDetailDA, String> tbcSaleOrderDetailUnitPrice;
     @FXML
     private TableColumn<SaleOrderDetailDA, String> tbcSaleOrderDetailDiscount;
-    @FXML
-    private Customer selectedBillToDA;
+
+    private Customer selectedBillTo;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -140,7 +140,7 @@ public class SaleOrderController extends EditController {
 
             dtpOrderDate.setValue(LocalDate.now());
             cboBillTo.setOnAction(e -> {
-                this.selectedBillToDA = ((Customer) getEntity(cboBillTo));
+                this.selectedBillTo = ((Customer) getEntity(cboBillTo));
                 tblSaleOrderDetails.getItems().forEach(bi -> {
                     if (bi.getItemDA().getItemID() != null) {
                         setPrices(bi);
@@ -311,7 +311,7 @@ public class SaleOrderController extends EditController {
                     : event.getOldValue();
             ((SaleOrderDetailDA) event.getTableView().getItems()
                     .get(event.getTablePosition().getRow()))
-                    .setBaseQuantity(getInt(value));
+                    .setBaseQuantity(getInteger(value));
             tblSaleOrderDetails.refresh();
             addRow(tblSaleOrderDetails, new SaleOrderDetailDA());
             this.calculateAmount();
@@ -394,8 +394,8 @@ public class SaleOrderController extends EditController {
     }
 
     private void setPrices(SaleOrderDetailDA saleOrderDetailDA) {
-        saleOrderDetailDA.setUnitPrice(saleOrderDetailDA.getItemDA().getUnitPrice(selectedBillToDA));
-        saleOrderDetailDA.setDiscount(saleOrderDetailDA.getItemDA().getDiscount(selectedBillToDA));
+        saleOrderDetailDA.setUnitPrice(saleOrderDetailDA.getItemDA().getUnitPrice(selectedBillTo));
+        saleOrderDetailDA.setDiscount(saleOrderDetailDA.getItemDA().getDiscount(selectedBillTo));
     }
 
     public void calculateAmount() {

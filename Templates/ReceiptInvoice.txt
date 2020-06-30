@@ -1,6 +1,5 @@
-Receipt, Receipt, String, Receipt,, OneToOne, Foreign, Display, 100, false, false, 
-Invoice, Invoice, String, Invoice,, OneToOne, Foreign, Display, 100, false, false, 
-ReceiptInvoiceID, ReceiptInvoiceID, String, ,, , Primary, , 100, false, false,
-InvoiceAmount, Invoice Amount, double 
+ReceiptInvoiceID, ReceiptInvoiceID, int, ,, , Primary_Auto, , 100, false, false, 
+Receipt, Receipt, String, Receipt,, OneToOne, Unique_Group, Display, 100, false, false, 
+Invoice, Invoice, String, Invoice,, OneToOne, Unique_Group, Display, 100, false, false, 
 Amount, Amount, double, ,, , , , 100, false, false, 
-AmountRefunded, AmountRefunded, double
+AmountRefunded, AmountRefunded, double, ,, , , , 100, false, true, 

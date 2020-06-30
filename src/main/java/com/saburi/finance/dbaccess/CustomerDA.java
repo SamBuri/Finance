@@ -636,7 +636,7 @@ public class CustomerDA extends DBAccess {
         List<InvoiceDetailsDA> invoiceDetailsDAs = new ArrayList<>();
         getPendingSaleOrderDetails().forEach(bD -> {
             InvoiceDetailsDA invoiceDetailsDA = new InvoiceDetailsDA();
-            invoiceDetailsDA.setSaleOrderDetails(bD);
+            invoiceDetailsDA.setSaleOrderDetail(bD);
             invoiceDetailsDAs.add(invoiceDetailsDA);
         });
         return invoiceDetailsDAs;

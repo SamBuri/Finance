@@ -225,7 +225,7 @@ public class RefundReceiptInvoiceDA extends DBAccess {
         this.searchColumns.add(new SearchColumn("refundDisplay", "Refund", this.refundDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("receiptInvoiceID", "Receipt Invoice ID", this.receiptInvoiceID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptInvoiceDisplay", "Receipt Invoice", this.receiptInvoiceDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(),this.amountDisplay.get(), SearchDataTypes.NUMBER));
+        this.searchColumns.add(new SearchColumn("amount", "Amount", this.amount.get(), this.amountDisplay.get(), SearchDataTypes.NUMBER));
         this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptID", "Receipt ID", this.receiptID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("receiptDisplay", "Receipt", this.receiptDisplay.get(), SearchDataTypes.STRING));
@@ -263,11 +263,17 @@ public class RefundReceiptInvoiceDA extends DBAccess {
     }
 
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.refundReceiptInvoice);
 
     }
 
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.refundReceiptInvoice);
 
     }
@@ -338,6 +344,18 @@ public class RefundReceiptInvoiceDA extends DBAccess {
 
     public List<RefundReceiptInvoice> getRefundReceiptInvoices(String columName, Object value) {
         return super.find(RefundReceiptInvoice.class, columName, value);
+    }
+
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("refund", refundReceiptInvoice.getRefund(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("receiptInvoice", refundReceiptInvoice.getReceiptInvoice(), SearchColumn.SearchType.Equal));
+        List<RefundReceiptInvoice> lRefundReceiptInvoice = super.find(RefundReceiptInvoice.class, lSearchColumns);
+        lRefundReceiptInvoice.removeIf((p) -> p.getId().equals(refundReceiptInvoice.getId()));
+        if (lRefundReceiptInvoice.size() > 0) {
+            throw new Exception("The record with Refund: " + refundReceiptInvoice.getRefund().getDisplayKey() + " and Receipt Invoice: " + refundReceiptInvoice.getReceiptInvoice().getDisplayKey() + "already exists");
+        }
+        return true;
     }
 
     @Override

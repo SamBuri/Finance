@@ -32,6 +32,7 @@ import com.saburi.finance.entities.CreditNoteRequest;
 import com.saburi.finance.utils.FinanceNavigate;
 import com.saburi.finance.dbaccess.InvoiceDetailsDA;
 import com.saburi.finance.entities.InvoiceDetails;
+import static com.saburi.common.utils.FXUIUtils.getInt;
 
 public class CreditNoteRequestDetailsController extends EditController {
 

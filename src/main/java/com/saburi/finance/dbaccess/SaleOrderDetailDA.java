@@ -30,6 +30,8 @@ import com.saburi.finance.utils.FinanceEnums.InvoiceStatus;
 
 public class SaleOrderDetailDA extends DBAccess {
     
+    private final SimpleIntegerProperty saleOrderDetailID = new SimpleIntegerProperty(this, "saleOrderDetailID");
+    private final SimpleStringProperty saleOrderDetailIDDisplay = new SimpleStringProperty(this, "saleOrderDetailIDDisplay");
     private SaleOrderDetail saleOrderDetail = new SaleOrderDetail();
     private final SimpleStringProperty saleOrderDisplay = new SimpleStringProperty(this, "saleOrderDisplay");
     private final SimpleObjectProperty saleOrderID = new SimpleObjectProperty(this, "saleOrderID");
@@ -37,7 +39,6 @@ public class SaleOrderDetailDA extends DBAccess {
     private final SimpleStringProperty itemDisplay = new SimpleStringProperty(this, "itemDisplay");
     private final SimpleObjectProperty itemID = new SimpleObjectProperty(this, "itemID");
     private Item item;
-    private final SimpleStringProperty saleOrderDetailID = new SimpleStringProperty(this, "saleOrderDetailID");
     private final SimpleIntegerProperty baseQuantity = new SimpleIntegerProperty(this, "baseQuantity");
     private final SimpleStringProperty baseQuantityDisplay = new SimpleStringProperty(this, "baseQuantityDisplay");
     private final SimpleStringProperty unitMeasure = new SimpleStringProperty(this, "unitMeasure");
@@ -150,8 +151,12 @@ public class SaleOrderDetailDA extends DBAccess {
         
     }
     
-    public String getSaleOrderDetailID() {
+    public int getSaleOrderDetailID() {
         return saleOrderDetailID.get();
+    }
+    
+    public String getSaleOrderDetailIDDisplay() {
+        return saleOrderDetailIDDisplay.get();
     }
     
     public int getBaseQuantity() {
@@ -298,6 +303,8 @@ public class SaleOrderDetailDA extends DBAccess {
     private void initialseProprties() {
         this.dBEntity = saleOrderDetail;
         this.saleOrder = saleOrderDetail.getSaleOrder();
+        this.saleOrderDetailID.set(saleOrderDetail.getSaleOrderDetailID());
+        this.saleOrderDetailIDDisplay.set(formatInteger(saleOrderDetail.getSaleOrderDetailID()));
         if (this.saleOrder != null) {
             this.saleOrderID.set(saleOrder.getId());
             this.saleOrderDisplay.set(saleOrder.getDisplayKey());
@@ -307,7 +314,6 @@ public class SaleOrderDetailDA extends DBAccess {
             this.itemID.set(item.getId());
             this.itemDisplay.set(item.getDisplayKey());
         }
-        this.saleOrderDetailID.set(saleOrderDetail.getSaleOrderDetailID());
         this.baseQuantity.set(saleOrderDetail.getBaseQuantity());
         this.baseQuantityDisplay.set(formatInteger(saleOrderDetail.getBaseQuantity()));
         this.unitMeasure.set(saleOrderDetail.getUnitMeasure());
@@ -327,11 +333,11 @@ public class SaleOrderDetailDA extends DBAccess {
     }
     
     private void createSearchColumns() {
+        this.searchColumns.add(new SearchColumn("saleOrderDetailID", "Sale Order Detail ID", this.saleOrderDetailID.get(), saleOrderDetailIDDisplay.get(), SearchDataTypes.INTEGER));
         this.searchColumns.add(new SearchColumn("saleOrderID", "SaleOrder ID", this.saleOrderID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("saleOrderDisplay", "SaleOrder", this.saleOrderDisplay.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("itemID", "Item ID", this.itemID.get(), SearchDataTypes.STRING, SearchColumn.SearchType.Equal, false));
         this.searchColumns.add(new SearchColumn("itemDisplay", "Item", this.itemDisplay.get(), SearchDataTypes.STRING));
-        this.searchColumns.add(new SearchColumn("saleOrderDetailID", "Sale Order Detail ID", this.saleOrderDetailID.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("baseQuantity", "Base Quantity", this.baseQuantity.get(), baseQuantityDisplay.get(), SearchDataTypes.INTEGER));
         this.searchColumns.add(new SearchColumn("unitMeasure", "Unit Measure", this.unitMeasure.get(), SearchDataTypes.STRING));
         this.searchColumns.add(new SearchColumn("measureSize", "Measure Size", this.measureSize.get(), measureSizeDisplay.get(), SearchDataTypes.INTEGER));
@@ -374,11 +380,17 @@ public class SaleOrderDetailDA extends DBAccess {
     }
     
     public boolean save() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.persist(this.saleOrderDetail);
         
     }
     
     public boolean update() throws Exception {
+        if (!isValid()) {
+            return false;
+        }
         return super.merge(this.saleOrderDetail);
         
     }
@@ -388,7 +400,7 @@ public class SaleOrderDetailDA extends DBAccess {
         
     }
     
-    public SaleOrderDetail getSaleOrderDetail(String saleOrderDetailID) {
+    public SaleOrderDetail getSaleOrderDetail(int saleOrderDetailID) {
         return (SaleOrderDetail) super.find(SaleOrderDetail.class, saleOrderDetailID);
     }
     
@@ -410,7 +422,7 @@ public class SaleOrderDetailDA extends DBAccess {
         return list;
     }
     
-    public SaleOrderDetailDA get(String saleOrderDetailID) throws Exception {
+    public SaleOrderDetailDA get(int saleOrderDetailID) throws Exception {
         SaleOrderDetail oSaleOrderDetail = getSaleOrderDetail(saleOrderDetailID);
         if (oSaleOrderDetail == null) {
             throw new Exception("No Record with id: " + saleOrderDetailID);
@@ -451,6 +463,18 @@ public class SaleOrderDetailDA extends DBAccess {
         return super.find(SaleOrderDetail.class, columName, value);
     }
     
+    public boolean isValid() throws Exception {
+        List<SearchColumn> lSearchColumns = new ArrayList<>();
+        lSearchColumns.add(new SearchColumn("saleOrder", saleOrderDetail.getSaleOrder(), SearchColumn.SearchType.Equal));
+        lSearchColumns.add(new SearchColumn("item", saleOrderDetail.getItem(), SearchColumn.SearchType.Equal));
+        List<SaleOrderDetail> lSaleOrderDetail = super.find(SaleOrderDetail.class, lSearchColumns);
+        lSaleOrderDetail.removeIf((p) -> p.getId().equals(saleOrderDetail.getId()));
+        if (lSaleOrderDetail.size() > 0) {
+            throw new Exception("The record with SaleOrder: " + saleOrderDetail.getSaleOrder().getDisplayKey() + " and Item: " + saleOrderDetail.getItem().getDisplayKey() + "already exists");
+        }
+        return true;
+    }
+    
     @Override
     public List<DBAccess> getRevisions() {
         try {
@@ -479,7 +503,7 @@ public class SaleOrderDetailDA extends DBAccess {
         
     }
     
-    public List<SaleOrderDetail> getPendingSaleOrderDetails(Customer client) {
+    public List<SaleOrderDetail> getPendingSaleOrderDetails(Customer customer) {
         try {
             entityManager = entityManagerFactory.createEntityManager();
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -488,7 +512,7 @@ public class SaleOrderDetailDA extends DBAccess {
             Join<SaleOrderDetail, SaleOrder> bJoin = root.join("saleOrder");
             
             criteriaQuery.where(criteriaBuilder.equal(root.get("invoiceStatus"), InvoiceStatus.Pending),
-                    criteriaBuilder.equal(bJoin.get("billTo"), client));
+                    criteriaBuilder.equal(bJoin.get("billTo"), customer));
             criteriaQuery.orderBy(criteriaBuilder.asc(root.get("recordDateTime")));
             TypedQuery<SaleOrderDetail> typedQuery = entityManager.createQuery(criteriaQuery);
             return typedQuery.getResultList();
@@ -498,6 +522,24 @@ public class SaleOrderDetailDA extends DBAccess {
             entityManager.close();
         }
         
+    }
+    
+    public List<SaleOrderDetail> getSaleOrderDetails(String column, Object value, String column1, Object value1) {
+        return super.find(SaleOrderDetail.class, column, value, column1, value1);
+    }
+    
+    public List<SaleOrderDetail> getSaleOrderDetails(SaleOrder saleOrder, Item item) {
+        return getSaleOrderDetails("saleOrder", saleOrder, "item", item);
+    }
+    
+    public SaleOrderDetail getSaleOrderDetail(SaleOrder saleOrder, Item item) {
+        List<SaleOrderDetail> saleOrderDetails = getSaleOrderDetails(saleOrder, item);
+        return saleOrderDetails.isEmpty() ? null : saleOrderDetails.get(0);
+    }
+    
+    public SaleOrderDetail getSaleOrderDetail(String saleOrderID, Item item) {
+        List<SaleOrderDetail> saleOrderDetails = getSaleOrderDetails(new SaleOrderDA().getSaleOrder(saleOrderID), item);
+        return saleOrderDetails.isEmpty() ? null : saleOrderDetails.get(0);
     }
     
 }

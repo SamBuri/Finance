@@ -1,7 +1,6 @@
 IdHelper, Id Helper, int, ,, , , ID_Helper, 100, false, false, 
 InvoiceID, Invoice ID, String, ,, , Primary, Display, 20, false, false, 
 InvoiceDate, Invoice Date, LocalDate, ,, , , , 100, false, true, 
-InvoiceType, Invoice Type, String, InvoiceTypes,, OneToOne, Foreign, , 100, true, true, 2
 SellTo, Sell To, String, Customer,, OneToOne, Foreign, , 100, false, true, 
 BillTo, Bill To, String, Customer,, OneToOne, Foreign, , 100, false, true, 
 OriginalAmount, Original Amount, double, ,, , , , 100, false, true, 
@@ -9,5 +8,7 @@ Amount, Amount, double, ,, , , , 100, false, true,
 AmountWords, Amount Words, String, ,, , , , 200, false, true, 
 AmountPaid, Amount Paid, double, ,, , , , 100, false, true, 
 AmountRefunded, Amount Refunded, double, ,, , , , 100, false, true, 
+InvoiceSource, Invoice Source, String, ,, , , , 40, false, true, 
+EntryMode, Entry Mode, String, EntryModes,, , , , 100, true, true, 1
 InvoiceDetails, Invoice Details, List, InvoiceDetails,Item>Item>String>Item#BaseQuantity>Base Quantity>int#UnitMeasure>Unit Measure>String#MeasureSize>Measure Size>int#Quantity>Quantity>int#UnitPrice>Unit Price>double#Discount>Discount>double#Amount>Amount>double#Location>Location>String, OneToMany, Foreign, , 100, false, true, 
 

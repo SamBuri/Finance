@@ -251,7 +251,7 @@
                         </SplitMenuButton>
                       
                         
-                        <SplitMenuButton id="Sales" fx:id="spmSales" mnemonicParsing="false" text="Sales">
+                        <SplitMenuButton id="Finance" fx:id="spmFinance" mnemonicParsing="false" text="Finance">
                             <items>
                                 
                                 <Menu fx:id="spmSaleOrder" id ="SaleOrder"  mnemonicParsing="false" text="Sale Orders">
@@ -299,18 +299,15 @@
                                     <MenuItem fx:id="mnuRefundEdit" id = "Print" mnemonicParsing="false" text="Print" />
                                     <MenuItem fx:id="mnuRefundView" id = "Read" mnemonicParsing="false" text="View" />
                                 </Menu>
+                                <Menu fx:id="mnuJournalEntry" mnemonicParsing="false" text="Journal Entry" id = "JournalEntry">
+                                    <MenuItem id="Create" fx:id="mnuJournalEntryAdd" mnemonicParsing="false" text="New" />
+                                    <MenuItem id="Update" fx:id="mnuJournalEntryUpdate" mnemonicParsing="false" text="Edit" />
+                                    <MenuItem id="Read" fx:id="mnuJournalEntryView" mnemonicParsing="false" text="View" />
+                                </Menu>
                             </items>
                             
                         </SplitMenuButton>
 
-                        <SplitMenuButton id="JournalEntry" fx:id="spmJournalEntry" mnemonicParsing="false" text="Journal Entry">
-                            <items>
-                                <MenuItem id="Create" fx:id="spmJournalEntryAdd" mnemonicParsing="false" text="New" />
-                                <MenuItem id="Update" fx:id="spmJournalEntryUpdate" mnemonicParsing="false" text="Edit" />
-                                <MenuItem id="Read" fx:id="spmJournalEntryView" mnemonicParsing="false" text="View" />
-                            </items>
-                        </SplitMenuButton>
-                       
 
                     </items>
                 </ToolBar>

@@ -14,14 +14,14 @@ import com.saburi.common.entities.DBEntity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import com.saburi.finance.utils.FinanceEnums.InvoiceTypes;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ForeignKey;
 import javax.persistence.OneToOne;
+import com.saburi.common.utils.CommonEnums.EntryModes;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import java.util.List;
 import javax.persistence.CascadeType;
-import javax.persistence.JoinTable;
 import java.util.ArrayList;
 import javax.persistence.OneToMany;
 
@@ -37,37 +37,45 @@ public class Invoice extends DBEntity {
     @Column(length = 20, updatable = false)
     private String invoiceID;
     private LocalDate invoiceDate;
-    @Enumerated
-    private InvoiceTypes invoiceType;
     @OneToOne
     @JoinColumn(name = "sellToID", foreignKey = @ForeignKey(name = "fkSellToIDInvoice"))
     private Customer sellTo;
     @OneToOne
     @JoinColumn(name = "billToID", foreignKey = @ForeignKey(name = "fkBillToIDInvoice"))
     private Customer billTo;
+    @Column(name = "originalAmount")
     private double originalAmount;
+    @Column(name = "amount")
     private double amount;
     @Size(max = 200, message = "The field: Amount Words size cannot be greater than 200")
     @Column(length = 200)
     private String amountWords;
+    @Column(name = "amountPaid")
     private double amountPaid;
+    @Column(name = "amountRefunded")
     private double amountRefunded;
+    @Size(max = 40, message = "The field: Invoice Source size cannot be greater than 40")
+    @Column(length = 40)
+    private String invoiceSource;
+    @Enumerated(EnumType.STRING)
+    private EntryModes entryMode;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "invoice")
     private List<InvoiceDetails> invoiceDetails = new ArrayList<>();
 
     public Invoice() {
     }
 
-    public Invoice(int idHelper, String invoiceID, LocalDate invoiceDate, InvoiceTypes invoiceType, Customer sellTo, Customer billTo, double amount, String amountWords) {
+    public Invoice(int idHelper, String invoiceID, LocalDate invoiceDate, Customer sellTo, Customer billTo, double amount, String amountWords, String invoiceSource, EntryModes entryMode) {
         this.idHelper = idHelper;
         this.invoiceID = invoiceID;
         this.invoiceDate = invoiceDate;
-        this.invoiceType = invoiceType;
         this.sellTo = sellTo;
         this.billTo = billTo;
-        this.amount = amount;
         this.originalAmount = amount;
+        this.amount = amount;
         this.amountWords = amountWords;
+        this.invoiceSource = invoiceSource;
+        this.entryMode = entryMode;
 
     }
 
@@ -93,14 +101,6 @@ public class Invoice extends DBEntity {
 
     public void setInvoiceDate(LocalDate invoiceDate) {
         this.invoiceDate = invoiceDate;
-    }
-
-    public InvoiceTypes getInvoiceType() {
-        return invoiceType;
-    }
-
-    public void setInvoiceType(InvoiceTypes invoiceType) {
-        this.invoiceType = invoiceType;
     }
 
     public Customer getSellTo() {
@@ -159,6 +159,22 @@ public class Invoice extends DBEntity {
         this.amountRefunded = amountRefunded;
     }
 
+    public String getInvoiceSource() {
+        return invoiceSource;
+    }
+
+    public void setInvoiceSource(String invoiceSource) {
+        this.invoiceSource = invoiceSource;
+    }
+
+    public EntryModes getEntryMode() {
+        return entryMode;
+    }
+
+    public void setEntryMode(EntryModes entryMode) {
+        this.entryMode = entryMode;
+    }
+
     public List<InvoiceDetails> getInvoiceDetails() {
         return invoiceDetails;
     }
@@ -172,13 +188,18 @@ public class Invoice extends DBEntity {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Invoice)) {
+        if (o == null) {
             return false;
         }
-
-        Invoice invoice = (Invoice) o;
-
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        final Invoice invoice = (Invoice) o;
+        if (this.getId() == null || invoice.getId() == null) {
+            return false;
+        }
         return this.getId().equals(invoice.getId());
+
     }
 
     @Override

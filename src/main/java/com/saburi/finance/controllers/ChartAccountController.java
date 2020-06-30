@@ -71,6 +71,7 @@ public class ChartAccountController extends EditController {
             cboAccountType.setItems(FXCollections.observableArrayList(AccountTypes.values()));
             cboAccountAction.setItems(FXCollections.observableArrayList(AccountActions.values()));
             cboAccountReport.setItems(FXCollections.observableArrayList(AccountReports.values()));
+            loadDBEntities(cboAccountCategory);
             validateNumber(txtOpeningBalance);
             validateNumber(txtClosingBalance);
             formatValue(txtOpeningBalance);
@@ -83,8 +84,8 @@ public class ChartAccountController extends EditController {
             cboAccountType.setOnAction(e -> accountTypeSelectected());
             chkContra.setOnAction(e -> setDefaultSelections());
             selectItem(FinanceNavigate.MAIN_CLASS, cmiSelectAccountCategory, oAccountCategoryDA, "AccountCategory", "Account Category", cboAccountCategory, true);
-           enableNodes();
-           chkHidden.disableProperty().bind(btnSave.textProperty().isEqualToIgnoreCase(FormMode.Save.name()));
+            enableNodes();
+            chkHidden.disableProperty().bind(btnSave.textProperty().isEqualToIgnoreCase(FormMode.Save.name()));
         } catch (Exception e) {
             errorMessage(e);
         } finally {
@@ -149,7 +150,9 @@ public class ChartAccountController extends EditController {
             cboAccountType.setValue(chartAccountDA.getAccountType());
             AccountCategory accountCategory = chartAccountDA.getAccountCategory();
             List<AccountCategory> accountCategories = cboAccountCategory.getItems();
-            if(!accountCategories.contains(accountCategory))cboAccountCategory.getItems().add(accountCategory);
+            if (!accountCategories.contains(accountCategory)) {
+                cboAccountCategory.getItems().add(accountCategory);
+            }
             cboAccountCategory.setValue(accountCategory);
             txtAccountID.setText(chartAccountDA.getAccountID());
             txtAccountName.setText(chartAccountDA.getAccountName());

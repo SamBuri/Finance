@@ -1,5 +1,6 @@
-Item, Item, String, Item,, , , , 100, false, false, 
-PriceGroup, Price Group, String, LookupData,, , , Display, 100, false, false, 
-ItemPriceGroupID, Item Price Group ID, String, ,, , Primary, , 20, false, false, 
-UnitPrice, UnitPrice, double, ,, , , , 100, false, true, 
+ItemPriceGroupID, Item Price Group ID, int, ,, , Primary_Auto, , 20, false, false, 
+Item, Item, String, Item,, , Unique_Group, , 100, false, false, 
+PriceGroup, Price Group, String, LookupData,, , Unique_Group, Display, 100, false, false, 
+UnitPrice, Unit Price, double, ,, , , , 100, false, true, 
 Discount, Discount, double, ,, , , , 100, false, true, 
+
